@@ -5,9 +5,12 @@ from .models import User, db
 from .forms import SignupForm, LoginForm
 from . import app
 
-@app.route('/')
+@app.route('/home')
+@login_required
 def home():
-    return render_template('index.html', message="Hello from views.py!")
+    # Use current_user to get the logged-in user's username
+    username = current_user.username  # Assuming you have a 'username' attribute in your User model
+    return render_template('index.html', message=f"Hello, {username}!")
 
 
 
@@ -61,3 +64,7 @@ def logout():
     logout_user()
     # flash('You have been logged out.', 'info')
     return redirect(url_for('login'))
+
+@app.route('/')
+def landing():
+    return render_template('landing.html')
