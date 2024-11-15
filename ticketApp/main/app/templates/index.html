@@ -1,6 +1,4 @@
-<!-- app/templates/index.html -->
 {% extends "base.html" %}
-
 
 {% block title %}Home{% endblock %}
 {% block content %}
@@ -9,10 +7,105 @@
     <head>
         <meta charset="UTF-8">
         <title>Flask with Views</title>
+        <!-- Link to external JS file -->
+        <script src="{{ url_for('static', filename='js/tabs.js') }}" defer></script>
+        <!-- Optionally add styles -->
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/flash.css') }}">
+        <script src="{{ url_for('static', filename='js/flash.js') }}" defer></script>
     </head>
     <body>
-        <h1>{{ message }}</h1>
+        <h1>{{message}}</h1>
+        <!-- Tabs navigation -->
+        <div class="tabs">
+            <button class="tablinks" onclick="openTab(event, 'createNewEvent')">Create New Event</button>
+            <button class="tablinks" onclick="openTab(event, 'yourEvents')">Your Events</button>
+            <button class="tablinks" onclick="openTab(event, 'otherEvents')">Browse Events</button>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+    
+
+        <!-- Tab content -->
+        <div id="createNewEvent" class="tabcontent">
+            <h2>Create a new event</h2>
+            <form method="POST">
+                {{ form.hidden_tag() }}
+                <div class="form-group">
+                    {{ form.event_name.label }} {{ form.event_name(class="form-control") }}
+                </div>
+                <div class="form-group">
+                    {{ form.event_description.label }} {{ form.event_description(class="form-control") }}
+                </div>
+                <div class="form-group">
+                    {{ form.guests.label }} {{ form.guests(class="form-control") }}
+                </div>
+                <div class="form-group">
+                    {{ form.date.label }} {{ form.date(class="form-control") }}
+                </div>
+                <div class="form-group">
+                    {{ form.time.label }} {{ form.time(class="form-control") }}
+                </div>
+                <div class="form-group">
+                    {{ form.location.label }} {{ form.location(class="form-control") }}
+                </div>
+                {{ form.submit(class="btn btn-primary") }}
+            </form>
+        </div>
+
+        <div id="yourEvents" class="tabcontent">
+            <h2>Your Events</h2>
+            <div class="row">
+                {% for event in events %}
+                    <div class="col-md-4 d-flex align-items-stretch">
+                        <div class="card" style="width: 18rem;">
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title">{{ event.event_name }}</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">{{ event.date }} {{ event.time }}</h6>
+                                <p class="card-text">{{ event.event_description }}</p>
+                                <a href="/event/{{ event.id }}" class="btn btn-primary mt-auto">View Event</a>
+                                <a href="/event/{{ event.id }}/edit" class="btn btn-primary">Edit Event</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% if loop.index % 3 == 0 and not loop.last %}
+                        </div><div class="row">
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+
+        <div id="otherEvents" class="tabcontent">
+            <h2>Other Events</h2>
+            <div class="row">
+                {% for event in future_events %}
+                    <div class="col-md-4 d-flex align-items-stretch">
+                        <div class="card" style="width: 18rem;">
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title">{{ event.event_name }}</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">{{ event.date }} {{ event.time }}</h6>
+                                <p class="card-text">{{ event.event_description }}</p>
+                                <div class="d-flex justify-content-left mt-auto">
+                                    <a href="/event/{{ event.id }}" class="btn btn-primary">View Event</a>
+                                    <a href="/event/{{ event.id }}/buy" class="btn btn-success">Buy Ticket</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% if loop.index % 3 == 0 and not loop.last %}
+                        </div><div class="row">
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
     </body>
     </html>
 {% endblock %}
-

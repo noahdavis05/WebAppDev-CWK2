@@ -1,0 +1,35 @@
+/* Position the flash messages below the tabs */
+.flash-messages {
+    margin: 10px auto;
+    max-width: 800px;
+    padding: 0 20px;
+}
+
+.flash-message {
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    font-size: 1rem;
+    color: white;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    opacity: 1; /* Start fully visible */
+    background-color: #444; /* Default background color */
+    transition: opacity 1s ease-in-out; /* Smooth fade-out effect */
+}
+
+/* Category-specific styles */
+.flash-message.success {
+    background-color: #4caf50; /* Green for success */
+}
+
+.flash-message.error, .flash-message.danger {
+    background-color: #f44336; /* Red for error */
+}
+
+.flash-message.info {
+    background-color: #2196f3; /* Blue for info */
+}
+
+.flash-message.warning {
+    background-color: #ff9800; /* Orange for warning */
+}

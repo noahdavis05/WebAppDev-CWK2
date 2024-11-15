@@ -1,16 +1,43 @@
 # app/views.py
 from flask import render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, login_required, current_user
-from .models import User, db
-from .forms import SignupForm, LoginForm
+from .models import User, Event, db
+from .forms import SignupForm, LoginForm, EventForm
 from . import app
+from datetime import datetime
 
-@app.route('/home')
+@app.route('/home', methods=['GET', 'POST'])
 @login_required
 def home():
     # Use current_user to get the logged-in user's username
-    username = current_user.username  # Assuming you have a 'username' attribute in your User model
-    return render_template('index.html', message=f"Hello, {username}!")
+    username = current_user.username 
+    # get the events created by the user
+    events = Event.query.filter_by(event_owner=current_user.id).all()
+    # get all events by any user that are in the future
+    future_events = Event.query.filter(Event.date >= datetime.now()).all()
+    # setup the create event form
+    form = EventForm()
+    if form.validate_on_submit():
+        # Create the new event
+        event = Event(
+            event_name=form.event_name.data,
+            event_description=form.event_description.data,
+            date=form.date.data,
+            time=form.time.data,
+            location=form.location.data,
+            event_owner=current_user.id
+        )
+
+        db.session.add(event)
+        db.session.commit()
+
+        flash('Event created successfully!', 'success')
+        return redirect(url_for('home'))
+    else:
+        for field, errors in form.errors.items():
+            for error in errors:
+                flash(f'{field.capitalize()}: {error}', 'danger')
+    return render_template('index.html', message=f"Hello, {username}!", events=events, form=form, future_events=future_events)
 
 
 
@@ -63,8 +90,36 @@ def login():
 def logout():
     logout_user()
     # flash('You have been logged out.', 'info')
-    return redirect(url_for('login'))
+    return redirect(url_for('landing'))
 
 @app.route('/')
 def landing():
     return render_template('landing.html')
+
+
+@app.route('/event/new', methods=['GET', 'POST'])
+@login_required
+def newEvent():
+    form = EventForm()
+    if form.validate_on_submit():
+        # Create the new event
+        event = Event(
+            event_name=form.event_name.data,
+            event_description=form.event_description.data,
+            date=form.date.data,
+            time=form.time.data,
+            location=form.location.data,
+            event_owner=current_user.id
+        )
+
+        db.session.add(event)
+        db.session.commit()
+
+        flash('Event created successfully!', 'success')
+        return redirect(url_for('home'))
+    else:
+        for field, errors in form.errors.items():
+            for error in errors:
+                flash(f'{field.capitalize()}: {error}', 'danger')
+    
+    return render_template('new_event.html', form=form)

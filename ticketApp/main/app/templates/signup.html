@@ -2,15 +2,20 @@
 {% block title %}Sign Up{% endblock %}
 
 {% block content %}
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/flash.css') }}">
+    <script src="{{ url_for('static', filename='js/flash.js') }}" defer></script>
+</head>
 <div class="container mt-4">
     <h2>Sign Up</h2>
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
-            <ul>
-            {% for category, message in messages %}
-                <li class="{{ category }}">{{ message }}</li>
-            {% endfor %}
-            </ul>
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
         {% endif %}
     {% endwith %}
     <form method="POST">

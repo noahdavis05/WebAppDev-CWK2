@@ -29,6 +29,7 @@ class Event(db.Model):
     time = db.Column(db.Time, nullable=False)
     date = db.Column(db.Date, nullable=False)
     location = db.Column(db.String(300), nullable=False)
+    guests = db.Column(db.Integer, nullable=True)
     event_owner = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
     def __repr__(self):

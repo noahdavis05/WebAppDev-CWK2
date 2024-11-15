@@ -1,0 +1,63 @@
+/* style.css */
+
+body {
+    font-family: Arial, sans-serif;
+}
+
+/* Style the tabs container */
+.tabs {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
+/* Style the tab buttons */
+.tablinks {
+    background-color: #f1f1f1;
+    border: none;
+    padding: 14px 20px;
+    cursor: pointer;
+    width: 33%;
+    text-align: center;
+    transition: 0.3s;
+}
+
+.tablinks:hover {
+    background-color: #ddd;
+}
+
+.tablinks.active {
+    background-color: #4CAF50;
+    color: white;
+}
+
+/* Hide all tab content by default */
+.tabcontent {
+    display: none;
+    padding: 20px;
+    border-top: 1px solid #ddd;
+}
+
+/* Style for card elements */
+.card {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 5px;
+    margin-bottom: 15px;
+}
+
+.card-title {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+}
+
+.card-subtitle {
+    font-size: 1.1em;
+    color: gray;
+    margin-bottom: 10px;
+}
+
+.btn {
+    margin:5px;
+}
+

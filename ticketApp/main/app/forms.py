@@ -1,6 +1,6 @@
 # app/forms.py
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, TextAreaField, DateField, TimeField
+from wtforms import StringField, PasswordField, SubmitField, TextAreaField, DateField, TimeField, IntegerField
 from wtforms.validators import DataRequired, Email, EqualTo, ValidationError, Length
 from .models import User
 
@@ -37,6 +37,7 @@ class EventForm(FlaskForm):
         DataRequired(),
         Length(max=500, message="Description must be 500 characters or fewer.")
     ])
+    guests = IntegerField('Number of Guests', validators=[DataRequired()])
     date = DateField('Event Date', validators=[DataRequired()], format='%Y-%m-%d')
     time = TimeField('Event Time', validators=[DataRequired()], format='%H:%M')
     location = StringField('Event Location', validators=[
