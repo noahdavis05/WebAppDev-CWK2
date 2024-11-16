@@ -45,5 +45,7 @@ class Ticket(db.Model):
     event_id = db.Column(db.Integer, db.ForeignKey('events.id'), nullable=False)
     paid = db.Column(db.Boolean, nullable=False, default=False)
 
+    event = db.relationship('Event', backref='tickets')
+
     def __repr__(self):
         return f"<Ticket {self.id}>"

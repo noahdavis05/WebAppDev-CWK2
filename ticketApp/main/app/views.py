@@ -6,17 +6,38 @@ from .forms import SignupForm, LoginForm, EventForm, TicketForm
 from . import app
 from datetime import datetime
 from sqlalchemy.exc import OperationalError
+import json
 
 @app.route('/home', methods=['GET', 'POST'])
 @login_required
 def home():
     # Use current_user to get the logged-in user's username
     username = current_user.username 
+    
     # get the events created by the user
     events = Event.query.filter_by(event_owner=current_user.id).all()
+    
     # get all events by any user that are in the future
     future_events = Event.query.filter(Event.date >= datetime.now()).all()
-    # setup the create event form
+    
+    # get all the tickets for the user
+    user_tickets = Ticket.query.filter_by(ticket_owner=current_user.id).all()
+
+    # Prepare the QR code data for each ticket
+    ticket_data = []
+    for ticket in user_tickets:
+        event = Event.query.get(ticket.event_id)
+        qr_data = {
+            'ticket_id': ticket.id,
+            'event_name': event.event_name,
+            'event_date': str(event.date),
+            'event_time': str(event.time),
+            'ticket_owner': ticket.ticket_owner
+        }
+        # Append the ticket data along with its QR code data into the list
+        ticket_data.append(qr_data)
+
+    # Setup the event creation form
     form = EventForm()
     if form.validate_on_submit():
         # Create the new event
@@ -40,8 +61,9 @@ def home():
         for field, errors in form.errors.items():
             for error in errors:
                 flash(f'{field.capitalize()}: {error}', 'danger')
-    return render_template('index.html', message=f"Hello, {username}!", events=events, form=form, future_events=future_events)
 
+    return render_template('index.html', message=f"Hello, {username}!", events=events, form=form, 
+                           future_events=future_events, ticket_data=ticket_data)
 
 
 @app.route('/signup', methods=['GET', 'POST'])
