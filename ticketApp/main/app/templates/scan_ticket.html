@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Scan QR Code{% endblock %}
+
+{% block content %}
+    <head>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/scan_ticket.css') }}">
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <!-- Include CSRF token as a meta tag -->
+        <meta name="csrf-token" content="{{ csrf_token() }}">
+    </head>
+    <h2>Scan a QR Code</h2>
+
+    <video id="video" width="300" height="200" autoplay></video>
+    <canvas id="canvas" width="300" height="200"></canvas>
+
+    <div id="result" style="margin-top: 20px;"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+
+    <script src="{{url_for('static',filename='js/scan_qr.js')}}"></script>
+{% endblock %}

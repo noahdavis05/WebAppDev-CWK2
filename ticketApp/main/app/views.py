@@ -1,5 +1,5 @@
 # app/views.py
-from flask import render_template, redirect, url_for, flash, request
+from flask import render_template, redirect, url_for, flash, request, jsonify
 from flask_login import login_user, logout_user, login_required, current_user
 from .models import User, Event, db, Ticket
 from .forms import SignupForm, LoginForm, EventForm, TicketForm
@@ -7,6 +7,7 @@ from . import app
 from datetime import datetime
 from sqlalchemy.exc import OperationalError
 import json
+
 
 @app.route('/home', methods=['GET', 'POST'])
 @login_required
@@ -160,3 +161,29 @@ def buy_ticket(event_id):
             return redirect(url_for('home'))
 
     return render_template('buy_ticket.html', event=event, form=form, ticket_count=ticket_count)
+
+
+@app.route('/scan-ticket', methods=['GET', 'POST'])
+def scan_ticket():
+    if request.method == 'POST':
+        print("Received POST request")
+        print(request.get_json())
+        try:
+            # Get QR code data from the AJAX request (JSON)
+            data = request.get_json()
+            if not data:
+                return jsonify({'success': False, 'message': 'Invalid JSON data received.'}), 400
+
+            qr_code = data.get('qr_code')  # Extract QR code data from the received JSON
+            if qr_code:
+                print(f"Received QR Code: {qr_code}")  # Print the QR code to the console
+                return jsonify({'success': True, 'message': f'QR Code {qr_code} received successfully!'})
+            else:
+                return jsonify({'success': False, 'message': 'No QR code data received.'}), 400
+
+        except Exception as e:
+            # Catch any other errors and return a 500 error with the error message
+            return jsonify({'success': False, 'message': f'Error processing QR code: {str(e)}'}), 500
+
+    # For GET requests, render the scanner page
+    return render_template('scan_ticket.html')
