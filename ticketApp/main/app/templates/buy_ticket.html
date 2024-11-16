@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-3">Buy Tickets for {{ event.name }}</h2>
+    
+    <p><strong>Date:</strong> {{ event.date }}</p>
+    <p><strong>Location:</strong> {{ event.location }}</p>
+    <p><strong>Remaining Tickets:</strong> {{ event.guests - ticket_count }}</p>
+
+    {% if ticket_count < event.guests %}
+    <form method="POST" action="{{ url_for('buy_ticket', event_id=event.id) }}">
+        <!-- Render CSRF token as a hidden input field -->
+        {{ form.hidden_tag() }}
+        
+        {% for field in form %}
+            <div class="form-group">
+                {{ field.label(class="form-label") }}
+                {{ field(class="form-control") }}
+                {% if field.errors %}
+                    <div class="text-danger">
+                        {{ field.errors[0] }}
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+        
+    </form>
+    {% else %}
+    <div class="alert alert-danger mt-3">Tickets for this event have sold out.</div>
+    {% endif %}
+</div>
+{% endblock %}

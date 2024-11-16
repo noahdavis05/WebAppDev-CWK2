@@ -1,6 +1,6 @@
 # app/forms.py
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, TextAreaField, DateField, TimeField, IntegerField
+from wtforms import StringField, PasswordField, SubmitField, TextAreaField, DateField, TimeField, IntegerField, FloatField
 from wtforms.validators import DataRequired, Email, EqualTo, ValidationError, Length
 from .models import User
 
@@ -38,6 +38,7 @@ class EventForm(FlaskForm):
         Length(max=500, message="Description must be 500 characters or fewer.")
     ])
     guests = IntegerField('Number of Guests', validators=[DataRequired()])
+    price = FloatField('Ticket Price', validators=[DataRequired()])
     date = DateField('Event Date', validators=[DataRequired()], format='%Y-%m-%d')
     time = TimeField('Event Time', validators=[DataRequired()], format='%H:%M')
     location = StringField('Event Location', validators=[
@@ -45,3 +46,6 @@ class EventForm(FlaskForm):
         Length(max=200, message="Location must be 200 characters or fewer.")
     ])
     submit = SubmitField('Create Event')
+
+class TicketForm(FlaskForm):
+    submit = SubmitField('Buy Ticket')

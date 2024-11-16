@@ -30,7 +30,20 @@ class Event(db.Model):
     date = db.Column(db.Date, nullable=False)
     location = db.Column(db.String(300), nullable=False)
     guests = db.Column(db.Integer, nullable=True)
+    price = db.Column(db.Float, nullable=True)
     event_owner = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
     def __repr__(self):
         return f"<Event {self.event_name}>"
+
+
+class Ticket(db.Model):
+    __tablename__ = 'tickets'
+
+    id = db.Column(db.Integer, primary_key=True)
+    ticket_owner = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    event_id = db.Column(db.Integer, db.ForeignKey('events.id'), nullable=False)
+    paid = db.Column(db.Boolean, nullable=False, default=False)
+
+    def __repr__(self):
+        return f"<Ticket {self.id}>"

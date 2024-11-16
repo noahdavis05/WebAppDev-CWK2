@@ -1,10 +1,11 @@
 # app/views.py
 from flask import render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, login_required, current_user
-from .models import User, Event, db
-from .forms import SignupForm, LoginForm, EventForm
+from .models import User, Event, db, Ticket
+from .forms import SignupForm, LoginForm, EventForm, TicketForm
 from . import app
 from datetime import datetime
+from sqlalchemy.exc import OperationalError
 
 @app.route('/home', methods=['GET', 'POST'])
 @login_required
@@ -25,7 +26,9 @@ def home():
             date=form.date.data,
             time=form.time.data,
             location=form.location.data,
-            event_owner=current_user.id
+            event_owner=current_user.id,
+            guests=form.guests.data,
+            price=form.price.data
         )
 
         db.session.add(event)
@@ -97,29 +100,41 @@ def landing():
     return render_template('landing.html')
 
 
-@app.route('/event/new', methods=['GET', 'POST'])
+@app.route('/event/<int:event_id>/buy', methods=['GET', 'POST'])
 @login_required
-def newEvent():
-    form = EventForm()
-    if form.validate_on_submit():
-        # Create the new event
-        event = Event(
-            event_name=form.event_name.data,
-            event_description=form.event_description.data,
-            date=form.date.data,
-            time=form.time.data,
-            location=form.location.data,
-            event_owner=current_user.id
-        )
-
-        db.session.add(event)
-        db.session.commit()
-
-        flash('Event created successfully!', 'success')
+def buy_ticket(event_id):
+    event = Event.query.get(event_id)
+    if not event:
+        flash('Event not found.', 'danger')
         return redirect(url_for('home'))
-    else:
-        for field, errors in form.errors.items():
-            for error in errors:
-                flash(f'{field.capitalize()}: {error}', 'danger')
-    
-    return render_template('new_event.html', form=form)
+
+    # Count the tickets initially (for display purposes only)
+    ticket_count = Ticket.query.filter_by(event_id=event_id).count()
+
+    if ticket_count >= event.guests:
+        flash('All tickets for this event have been sold.', 'danger')
+        return redirect(url_for('home'))
+
+    form = TicketForm()
+    if form.validate_on_submit():
+        try:
+            # Begin a transaction and lock during ticket creation
+            with db.session.begin_nested():  # Nested transaction ensures proper rollback
+                tickets = Ticket.query.filter_by(event_id=event_id).with_for_update().all()
+                ticket_count = len(tickets)
+
+                if ticket_count < event.guests:
+                    # Create and add the new ticket
+                    ticket = Ticket(ticket_owner=current_user.id, event_id=event_id)
+                    db.session.add(ticket)
+                    db.session.commit()  # Commit locks and updates
+                    flash('Ticket purchased successfully!', 'success')
+                    return redirect(url_for('home', event_id=event_id))
+                else:
+                    flash('Sorry, tickets have sold out.', 'danger')
+                    return redirect(url_for('home', event_id=event_id))
+        except OperationalError:
+            flash('An error occurred while processing your request. Please try again.', 'danger')
+            return redirect(url_for('home'))
+
+    return render_template('buy_ticket.html', event=event, form=form, ticket_count=ticket_count)
