@@ -14,8 +14,8 @@ function generateQRCode(ticket) {
 
     // Use toDataURL to generate the QR code as a data URL
     QRCode.toDataURL(JSON.stringify(qrData), {
-        width: 128,
-        height: 128
+        width: 256,
+        height: 256
     }).then(function(url) {
         // Set the source of the image element to the QR code data URL
         imgElement.src = url;
@@ -38,3 +38,7 @@ function initializeQRCodes() {
         console.error("No tickets data found.");
     }
 }
+
+// Include the QRCode.js library if not already included
+// <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+

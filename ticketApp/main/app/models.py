@@ -44,8 +44,10 @@ class Ticket(db.Model):
     ticket_owner = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     event_id = db.Column(db.Integer, db.ForeignKey('events.id'), nullable=False)
     paid = db.Column(db.Boolean, nullable=False, default=False)
+    ticket_used = db.Column(db.Boolean, nullable=False, default=False)
 
     event = db.relationship('Event', backref='tickets')
 
     def __repr__(self):
         return f"<Ticket {self.id}>"
+    

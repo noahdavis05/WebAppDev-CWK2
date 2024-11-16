@@ -28,11 +28,11 @@ def home():
     for ticket in user_tickets:
         event = Event.query.get(ticket.event_id)
         qr_data = {
-            'ticket_id': ticket.id,
-            'event_name': event.event_name,
+            'ticket_id': str(ticket.id),
+            'event_name': str(event.event_name),
             'event_date': str(event.date),
             'event_time': str(event.time),
-            'ticket_owner': ticket.ticket_owner
+            'ticket_owner': str(ticket.ticket_owner)
         }
         # Append the ticket data along with its QR code data into the list
         ticket_data.append(qr_data)

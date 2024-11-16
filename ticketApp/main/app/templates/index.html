@@ -13,9 +13,10 @@
         <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/flash.css') }}">
         <script src="{{ url_for('static', filename='js/flash.js') }}" defer></script>
-        # this is used for generating QR codes
+    
         <script src="https://cdn.jsdelivr.net/npm/qrcode@1.4.4/build/qrcode.min.js"></script>
         <script src="{{url_for('static',filename='js/qr_code.js')}}"></script>
+        
 
     </head>
     <body>
@@ -119,13 +120,12 @@
             <div class="row">
                 {% for ticket in ticket_data %}
                     <div class="col-md-4 d-flex align-items-stretch">
-                        <div class="card" style="width: 18rem;">
+                        <div class="card ticket-card" id="card-{{ ticket.ticket_id }}" style="width: 18rem;">
                             <div class="card-body d-flex flex-column">
                                 <h5 class="card-title">{{ ticket.event_name }}</h5>
                                 <p class="card-text">{{ ticket.event_date }} at {{ ticket.event_time }}</p>
-                                <div id="qr-{{ ticket.ticket_id }}" class="qr-code"></div>  <!-- QR code will be placed here -->
+                                <div id="qr-{{ ticket.ticket_id }}" class="qr-code"></div> <!-- QR code -->
                                 <div class="d-flex justify-content-left mt-auto">
-                                    <a href="/ticket/{{ ticket.ticket_id }}" class="btn btn-primary mt-2">View Ticket</a>
                                 </div>
                             </div>
                         </div>
@@ -136,6 +136,10 @@
                 {% endfor %}
             </div>
         </div>
+
+        
+
+
         <script>
             // Pass ticket data from Flask to JavaScript
             var tickets = {{ ticket_data | tojson }};
@@ -145,6 +149,7 @@
                 initializeQRCodes();
             });
         </script>
+ 
         
 
         
