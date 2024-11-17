@@ -177,7 +177,34 @@ def scan_ticket():
             qr_code = data.get('qr_code')  # Extract QR code data from the received JSON
             if qr_code:
                 print(f"Received QR Code: {qr_code}")  # Print the QR code to the console
-                return jsonify({'success': True, 'message': f'QR Code {qr_code} received successfully!'})
+                # now process the qr code
+                data = json.loads(qr_code)
+                # now get the ticket from the database
+                ticket = Ticket.query.get(data['ticket_id'])
+                if not ticket:
+                    return jsonify({'success': False, 'message': 'Ticket not found.'}), 404
+                # now validate the other variables match that of the ticker
+                event = Event.query.get(ticket.event_id)
+                if not event:
+                    return jsonify({'success': False, 'message': 'Invalid ticket.'}), 404
+                if event.event_name != data['event_name']:
+                    return jsonify({'success': False, 'message': 'Invalid ticket.'}), 400
+                if event.date.strftime('%Y-%m-%d') != data['event_date']:
+                    return jsonify({'success': False, 'message': 'Invalid ticket.'}), 400
+                if event.time.strftime('%H:%M:%S') != data['event_time']:
+                    return jsonify({'success': False, 'message': 'Invalid ticket.'}), 400
+                if str(ticket.ticket_owner) != str(data['ticket_owner']):
+                    return jsonify({'success': False, 'message': 'Invalid ticket.'}), 400
+                # now check if the ticket has already been used
+                if ticket.ticket_used:
+                    return jsonify({'success': False, 'message': 'Ticket has already been used.'}), 400
+                # now update the ticket to show it has been used
+                print("trying to save")
+                ticket.ticket_used = True
+                db.session.commit()
+
+                print(data)
+                return jsonify({'success': True, 'message': f'Ticket successfully scanned'})
             else:
                 return jsonify({'success': False, 'message': 'No QR code data received.'}), 400
 
