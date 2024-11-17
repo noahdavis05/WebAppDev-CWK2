@@ -39,6 +39,34 @@ function initializeQRCodes() {
     }
 }
 
+// Function to handle tab switching
+function openTab(event, tabName) {
+    // Get all elements with class "tabcontent" and hide them
+    var tabContent = document.getElementsByClassName("tabcontent");
+    for (var i = 0; i < tabContent.length; i++) {
+        tabContent[i].style.display = "none";
+    }
+
+    // Get all elements with class "tablinks" and remove the "active" class
+    var tabLinks = document.getElementsByClassName("tablinks");
+    for (var i = 0; i < tabLinks.length; i++) {
+        tabLinks[i].className = tabLinks[i].className.replace(" active", "");
+    }
+
+    // Show the current tab, and add an "active" class to the button that opened the tab
+    document.getElementById(tabName).style.display = "block";
+    event.currentTarget.className += " active";
+}
+
+// Ensure the first tab is open by default
+document.addEventListener("DOMContentLoaded", function() {
+    var defaultTab = document.querySelector(".tablinks");
+    if (defaultTab) {
+        defaultTab.click();
+    }
+});
+
+
 // Include the QRCode.js library if not already included
 // <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 

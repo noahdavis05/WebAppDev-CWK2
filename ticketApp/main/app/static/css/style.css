@@ -61,59 +61,5 @@ body {
     margin:5px;
 }
 
-/* Hide overflow when fullscreen */
-body.fullscreen-mode {
-    overflow: hidden;
-}
 
-/* Fullscreen styles for ticket card */
-.fullscreen-card {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: 1000;
-    background-color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.5);
-}
 
-.fullscreen-card .card-body {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
-.fullscreen-card .qr-code {
-    width: 80%;
-    height: auto;
-    max-width: 500px;
-    margin-top: 20px;
-}
-
-.fullscreen-card .btn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    z-index: 1100;
-}
-
-.fullscreen-card .qr-code {
-    width: 80%;
-    height: auto;
-    max-width: 500px;
-    margin-top: 20px;
-    transition: transform 0.3s ease;
-}
-
-.fullscreen-card .qr-code canvas {
-    width: 100% !important;
-    height: auto !important;
-}

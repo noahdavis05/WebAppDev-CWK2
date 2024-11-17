@@ -22,7 +22,9 @@ def home():
     future_events = Event.query.filter(Event.date >= datetime.now()).all()
     
     # get all the tickets for the user
-    user_tickets = Ticket.query.filter_by(ticket_owner=current_user.id).all()
+    user_tickets = Ticket.query.filter_by(ticket_owner=current_user.id, ticket_used=0).all()
+    used_tickets = Ticket.query.filter_by(ticket_owner=current_user.id, ticket_used=1).all()
+
 
     # Prepare the QR code data for each ticket
     ticket_data = []
@@ -33,12 +35,25 @@ def home():
             'event_name': str(event.event_name),
             'event_date': str(event.date),
             'event_time': str(event.time),
-            'ticket_owner': str(ticket.ticket_owner)
+            'ticket_owner': str(ticket.ticket_owner),
+            'event_description': event.event_description,  # Add event description
+            'event_location': event.location  # Add event location
         }
         # Append the ticket data along with its QR code data into the list
         ticket_data.append(qr_data)
 
     # Setup the event creation form
+    
+
+    return render_template('index.html', message=f"Hello, {username}!", 
+                           future_events=future_events, ticket_data=ticket_data, used_tickets=used_tickets)
+
+
+@app.route('/events', methods=['GET', 'POST'])
+@login_required
+def events():
+    # get all the user's events
+    events = Event.query.filter_by(event_owner=current_user.id).all()
     form = EventForm()
     if form.validate_on_submit():
         # Create the new event
@@ -63,9 +78,7 @@ def home():
             for error in errors:
                 flash(f'{field.capitalize()}: {error}', 'danger')
 
-    return render_template('index.html', message=f"Hello, {username}!", events=events, form=form, 
-                           future_events=future_events, ticket_data=ticket_data)
-
+    return render_template('events.html', events=events, form=form)
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
