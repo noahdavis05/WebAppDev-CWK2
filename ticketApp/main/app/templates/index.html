@@ -46,6 +46,7 @@
                         <h5 class="card-title">{{ event.event_name }}</h5>
                         <h6 class="card-subtitle mb-2 text-muted">{{ event.date }} {{ event.time }}</h6>
                         <p class="card-text">{{ event.event_description }}</p>
+                        <p class="card-text">£{{ event.price}}</p>
                         <div class="d-flex justify-content-left mt-auto">
                             <a href="/event/{{ event.id }}" class="btn btn-primary">View Event</a>
                             <a href="/event/{{ event.id }}/buy" class="btn btn-success">Buy Ticket</a>

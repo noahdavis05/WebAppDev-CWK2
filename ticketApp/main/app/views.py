@@ -20,6 +20,8 @@ def home():
     
     # get all events by any user that are in the future
     future_events = Event.query.filter(Event.date >= datetime.now()).all()
+    for event in future_events:
+        event.price = "{:.2f}".format(event.price)
     
     # get all the tickets for the user
     user_tickets = Ticket.query.filter_by(ticket_owner=current_user.id, ticket_used=0).all()
@@ -37,7 +39,7 @@ def home():
             'event_time': str(event.time),
             'ticket_owner': str(ticket.ticket_owner),
             'event_description': event.event_description,  # Add event description
-            'event_location': event.location  # Add event location
+            'event_location': event.location,  # Add event location
         }
         # Append the ticket data along with its QR code data into the list
         ticket_data.append(qr_data)
@@ -258,4 +260,5 @@ def edit_event(event_id):
         flash('Succesfully updated event!', 'success')
         return redirect(url_for('events'))
     
-    return render_template('edit_event.html', form=form, event=event)
+    event_time_str = event.time.strftime("%H:%M")
+    return render_template('edit_event.html', form=form, event=event, event_time_str=event_time_str)

@@ -3,6 +3,10 @@
 {% block content %}
 <div class="container mt-5">
     <h1 class="mb-4">Edit Event</h1>
+    <div class="alert alert-warning" role="alert">
+        Changing name, date, or time of the event will cause all qr codes to change.
+        Please warn all users not to use screenshotted qr codes!
+    </div>
     <form method="POST" action="">
         {{ form.hidden_tag() }}
         
@@ -32,7 +36,7 @@
         
         <div class="mb-3">
             <label for="time" class="form-label">Time</label>
-            {{ form.time(class="form-control", value=event.time) }}
+            {{ form.time(class="form-control", value=event_time_str) }}
             {% for error in form.time.errors %}
                 <div class="text-danger">{{ error }}</div>
             {% endfor %}
