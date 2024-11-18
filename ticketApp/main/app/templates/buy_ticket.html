@@ -15,8 +15,6 @@
         
         {% for field in form %}
             <div class="form-group">
-                {{ field.label(class="form-label") }}
-                {{ field(class="form-control") }}
                 {% if field.errors %}
                     <div class="text-danger">
                         {{ field.errors[0] }}
@@ -24,6 +22,8 @@
                 {% endif %}
             </div>
         {% endfor %}
+
+        <button type="submit" class="btn btn-primary">Buy Ticket</button>
         
     </form>
     {% else %}
