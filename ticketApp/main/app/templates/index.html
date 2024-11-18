@@ -21,6 +21,8 @@
     <div class="tabs">
         <button class="tablinks" onclick="openTab(event, 'otherEvents')">Browse Events</button>
         <button class="tablinks" onclick="openTab(event, 'ticket-list')">Your Tickets</button>
+        <button class="tablinks" onclick="openTab(event, 'old-tickets')">Used Tickets</button>
+
     </div>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
@@ -73,6 +75,30 @@
                         <p class="card-text">{{ ticket.event_description }}</p>
                         <p class="card-text">{{ ticket.event_location }}</p>
                         <div id="qr-{{ ticket.ticket_id }}" class="qr-code"></div>
+                    </div>
+                </div>
+            </div>
+            {% if loop.index % 3 == 0 and not loop.last %}
+            </div><div class="row">
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+    <div id="old-tickets" class="tabcontent">
+        <h2>Your Tickets</h2>
+        <div class="row">
+            {% if ticket_data|length == 0 %}
+            <p>No unused tickets</p>
+            {% endif %}
+            {% for ticket in used_tickets %}
+            <div class="col-md-4 d-flex align-items-stretch">
+                <div class="card ticket-card" id="card-{{ ticket.ticket_id }}" style="width: 18rem;">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">{{ ticket.event.event_name }}</h5>
+                        <p class="card-text">{{ ticket.event.date }} at {{ ticket.event.time }}</p>
+                        <p class="card-text">{{ ticket.event.event_description }}</p>
+                        <p class="card-text">{{ ticket.event.location }}</p>
+                        
                     </div>
                 </div>
             </div>

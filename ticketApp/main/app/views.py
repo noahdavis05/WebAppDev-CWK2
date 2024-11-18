@@ -177,6 +177,7 @@ def buy_ticket(event_id):
 
 
 @app.route('/scan-ticket', methods=['GET', 'POST'])
+@login_required
 def scan_ticket():
     if request.method == 'POST':
         print("Received POST request")
@@ -211,12 +212,16 @@ def scan_ticket():
                 # now check if the ticket has already been used
                 if ticket.ticket_used:
                     return jsonify({'success': False, 'message': 'Ticket has already been used.'}), 400
+                # get the event from the ticket
+                event = Event.query.get(ticket.event_id)
+                if current_user.id != event.event_owner:
+                    return jsonify({'success': False,'message': 'This ticket is not for your event'})
                 # now update the ticket to show it has been used
                 print("trying to save")
                 ticket.ticket_used = True
                 db.session.commit()
 
-                print(data)
+                #print(data)
                 return jsonify({'success': True, 'message': f'Ticket successfully scanned'})
             else:
                 return jsonify({'success': False, 'message': 'No QR code data received.'}), 400
@@ -227,3 +232,30 @@ def scan_ticket():
 
     # For GET requests, render the scanner page
     return render_template('scan_ticket.html')
+
+
+@app.route('/edit-event/<int:event_id>', methods=['GET', 'POST'])
+@login_required
+def edit_event(event_id):
+    # firstly check the logged in user owns the event 
+    event = Event.query.get(event_id)
+    if event.event_owner != current_user.id:
+        flash('You do not have access to this event!', 'danger')
+        return redirect(url_for('home'))
+    form = EventForm()
+    if form.validate_on_submit():
+        event.event_name = form.event_name.data
+        event.event_description = form.event_description.data
+        event.date = form.date.data
+        event.time = form.time.data  # No need for strptime conversion
+        event.location = form.location.data
+        event.event_owner = current_user.id
+        event.guests = form.guests.data
+        event.price = form.price.data
+
+
+        db.session.commit()
+        flash('Succesfully updated event!', 'success')
+        return redirect(url_for('events'))
+    
+    return render_template('edit_event.html', form=form, event=event)
