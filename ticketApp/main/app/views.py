@@ -26,6 +26,11 @@ def home():
     # get all the tickets for the user
     user_tickets = Ticket.query.filter_by(ticket_owner=current_user.id, ticket_used=0).all()
     used_tickets = Ticket.query.filter_by(ticket_owner=current_user.id, ticket_used=1).all()
+    # in used tickets make all the datetimes in style dd-mm-yyyy hh-mm
+    for ticket in used_tickets:
+        if ticket.scanned_at:
+            ticket.scanned_at = ticket.scanned_at.strftime("%d-%m-%Y %H:%M")
+    #and don't commit so these changes are only visible on the view, but not in db
 
 
     # Prepare the QR code data for each ticket
@@ -163,7 +168,7 @@ def buy_ticket(event_id):
 
                 if ticket_count < event.guests:
                     # Create and add the new ticket
-                    ticket = Ticket(ticket_owner=current_user.id, event_id=event_id)
+                    ticket = Ticket(ticket_owner=current_user.id, event_id=event_id, created_at=datetime.now())
                     db.session.add(ticket)
                     db.session.commit()  # Commit locks and updates
                     flash('Ticket purchased successfully!', 'success')
@@ -221,6 +226,7 @@ def scan_ticket():
                 # now update the ticket to show it has been used
                 print("trying to save")
                 ticket.ticket_used = True
+                ticket.scanned_at = datetime.now()
                 db.session.commit()
 
                 #print(data)

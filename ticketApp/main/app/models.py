@@ -45,6 +45,8 @@ class Ticket(db.Model):
     event_id = db.Column(db.Integer, db.ForeignKey('events.id'), nullable=False)
     paid = db.Column(db.Boolean, nullable=False, default=False)
     ticket_used = db.Column(db.Boolean, nullable=False, default=False)
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
+    scanned_at = db.Column(db.DateTime, nullable=True)
 
     event = db.relationship('Event', backref='tickets')
 
