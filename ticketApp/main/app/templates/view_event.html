@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">{{ event.event_name }}</h1>
+    <div class="card">
+        <div class="card-header">
+            Event Details
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">{{ event.event_name }}</h5>
+            <p class="card-text">{{ event.event_description }}</p>
+            <p class="card-text"><small class="text-muted">Date: {{ event.date }}</small></p>
+            <p class="card-text"><small class="text-muted">Time: {{ event.time }}</small></p>
+            <p class="card-text"><small class="text-muted">Location: {{ event.location }}</small></p>
+            <p class="card-text">Ticket price: £{{ event.price }}</p>
+            <p class="card-text">Total tickets: {{ event.guests }}</p>
+            <p class="card-text">Remaining Tickets: {{ event.guests - tickets|length }}</p>
+            
+        </div>
+    </div>
+    
+</div>
+{% endblock %}

@@ -262,3 +262,15 @@ def edit_event(event_id):
     
     event_time_str = event.time.strftime("%H:%M")
     return render_template('edit_event.html', form=form, event=event, event_time_str=event_time_str)
+
+
+@app.route('/event/<int:event_id>')
+@login_required
+def view_event(event_id):
+    event = Event.query.get(event_id)
+    if not event:
+        flash('Event not found.', 'danger')
+        return redirect(url_for('home'))
+    # get all the tickets for the event
+    tickets = Ticket.query.filter_by(event_id=event_id).all()
+    return render_template('view_event.html', event=event, tickets=tickets)

@@ -75,6 +75,7 @@
                                 <h5 class="card-title">{{ event.event_name }}</h5>
                                 <h6 class="card-subtitle mb-2 text-muted">{{ event.date }} {{ event.time }}</h6>
                                 <p class="card-text">{{ event.event_description }}</p>
+                                <a href="/event/{{ event.id }}" class="btn btn-primary">View Event</a>
                                 <a href="/edit-event/{{ event.id }}" class="btn btn-primary">Edit Event</a>
                                 <a href="/scan-ticket" class="btn btn-primary">Scan Ticket</a>
                             </div>
