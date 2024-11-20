@@ -7,7 +7,10 @@ from . import app
 from datetime import datetime
 from sqlalchemy.exc import OperationalError
 import json
+import stripe
 
+stripe.api_key = 'sk_test_51PhsUnGETTbhg7YVDKnaOBIjVE2Aw4nOrBxbJqI6WzusPjJUxwTKi9qmvlPec7KX5NfFyf0YRVVYYYOAMmkA1vmv00HBO84orN'
+YOUR_DOMAIN = 'https://http://localhost:5000'
 
 @app.route('/home', methods=['GET', 'POST'])
 @login_required
@@ -28,8 +31,9 @@ def home():
     used_tickets = Ticket.query.filter_by(ticket_owner=current_user.id, ticket_used=1).all()
     # in used tickets make all the datetimes in style dd-mm-yyyy hh-mm
     for ticket in used_tickets:
-        if ticket.scanned_at:
-            ticket.scanned_at = ticket.scanned_at.strftime("%d-%m-%Y %H:%M")
+        if ticket != None:
+            if ticket.scanned_at:
+                ticket.scanned_at = ticket.scanned_at.strftime("%d-%m-%Y %H:%M")
     #and don't commit so these changes are only visible on the view, but not in db
 
 
@@ -161,8 +165,7 @@ def buy_ticket(event_id):
     form = TicketForm()
     if form.validate_on_submit():
         try:
-            # Begin a transaction and lock during ticket creation
-            with db.session.begin_nested():  # Nested transaction ensures proper rollback
+            with db.session.begin_nested():
                 tickets = Ticket.query.filter_by(event_id=event_id).with_for_update().all()
                 ticket_count = len(tickets)
 
@@ -170,17 +173,38 @@ def buy_ticket(event_id):
                     # Create and add the new ticket
                     ticket = Ticket(ticket_owner=current_user.id, event_id=event_id, created_at=datetime.now())
                     db.session.add(ticket)
-                    db.session.commit()  # Commit locks and updates
-                    flash('Ticket purchased successfully!', 'success')
-                    return redirect(url_for('home', event_id=event_id))
-                else:
-                    flash('Sorry, tickets have sold out.', 'danger')
-                    return redirect(url_for('home', event_id=event_id))
+                    db.session.commit()
+
+            # Move Stripe session creation here
+            session = stripe.checkout.Session.create(
+                line_items=[
+                    {
+                        'price_data': {
+                            'currency': 'gbp',  # Replace 'usd' with your preferred currency
+                            'product_data': {
+                                'name': event.event_name,  # Use your event name or another descriptive label
+                            },
+                            'unit_amount': int(event.price * 100),  # Convert price to cents
+                        },
+                        'quantity': 1,
+                    }
+                ],
+                mode='payment',
+                success_url=YOUR_DOMAIN + f'/success/{ticket.id}?session_id={{CHECKOUT_SESSION_ID}}',
+                cancel_url=YOUR_DOMAIN + '/cancel',
+            )
+
+            return redirect(session.url, code=303)
+
         except OperationalError:
             flash('An error occurred while processing your request. Please try again.', 'danger')
             return redirect(url_for('home'))
 
+
     return render_template('buy_ticket.html', event=event, form=form, ticket_count=ticket_count)
+
+
+
 
 
 @app.route('/scan-ticket', methods=['GET', 'POST'])
@@ -280,3 +304,17 @@ def view_event(event_id):
     # get all the tickets for the event
     tickets = Ticket.query.filter_by(event_id=event_id).all()
     return render_template('view_event.html', event=event, tickets=tickets)
+
+
+@app.route('/success/<int:ticket_id>')
+@login_required
+def success(ticket_id):
+    ticket = Ticket.query.get(ticket_id)
+    if not ticket:
+        flash('Ticket not found.', 'danger')
+        return redirect(url_for('home'))
+
+    ticket.paid = True
+    db.session.commit()
+    flash('Ticket purchased successfully!', 'success')
+    return redirect(url_for('home'))
