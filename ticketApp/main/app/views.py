@@ -176,6 +176,7 @@ def buy_ticket(event_id):
                     db.session.commit()
 
             # Move Stripe session creation here
+            expires_at = int(datetime.utcnow().timestamp()) + 1800
             session = stripe.checkout.Session.create(
                 line_items=[
                     {
@@ -192,6 +193,7 @@ def buy_ticket(event_id):
                 mode='payment',
                 success_url=YOUR_DOMAIN + f'/success/{ticket.id}?session_id={{CHECKOUT_SESSION_ID}}',
                 cancel_url=YOUR_DOMAIN + '/cancel',
+                expires_at=expires_at,
             )
 
             return redirect(session.url, code=303)
