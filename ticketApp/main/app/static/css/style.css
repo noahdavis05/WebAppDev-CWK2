@@ -7,6 +7,7 @@
     display: flex;
     justify-content: space-around;
     margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 /* Style the tab buttons */
@@ -25,8 +26,9 @@
 }
 
 .tablinks.active {
-    background-color: #4CAF50;
+    background-color: rgba(0, 0, 0, 0.2);
     color: white;
+    border-color: #fff !important;
 }
 
 /* Hide all tab content by default */

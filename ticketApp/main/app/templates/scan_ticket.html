@@ -9,14 +9,16 @@
         <!-- Include CSRF token as a meta tag -->
         <meta name="csrf-token" content="{{ csrf_token() }}">
     </head>
-    <h2>Scan a QR Code</h2>
+    <container>
+        <h2>Scan a QR Code</h2>
 
-    <div id="result-return" style="margin-top: 20px; font-size: 1.2em;"></div>
+        <div id="result-return" style="margin-top: 20px; font-size: 1.2em;"></div>
 
-    <video id="video" width="300" height="200" autoplay></video>
-    <canvas id="canvas" width="300" height="200"></canvas>
+        <video id="video" width="300" height="200" autoplay></video>
+        <canvas id="canvas" width="300" height="200"></canvas>
 
-    <div id="result" style="margin-top: 20px;"></div>
+        <div id="result" style="margin-top: 20px;"></div>
+    </container>
 
     <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 

@@ -7,8 +7,7 @@ body {
 video {
     border: 1px solid #ccc;
     margin-bottom: 10px;
-    width: 100%;
-    max-width: 400px;
+    height: 100%;
 }
 
 canvas {
