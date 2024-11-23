@@ -21,6 +21,11 @@
     transition: 0.3s;
 }
 
+a.tablinks{
+    color: black;
+    text-decoration: none;
+}
+
 .tablinks:hover {
     background-color: #ddd;
 }

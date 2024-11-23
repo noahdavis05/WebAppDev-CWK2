@@ -1,0 +1,43 @@
+<!-- templates/add_stripe.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>{{ 'Update Your Stripe Keys' if form.public_key.data else 'Add Your Stripe Keys' }}</h1>
+
+  <form method="POST" action="{{ url_for('add_stripe') }}">
+    {{ form.hidden_tag() }}
+    
+    <div class="form-group">
+      <label for="public_key">Public Key</label>
+      {{ form.public_key(class="form-control") }}
+      {% if form.public_key.errors %}
+        <ul class="errors">
+          {% for error in form.public_key.errors %}
+            <li>{{ error }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </div>
+    
+    <div class="form-group">
+      <label for="private_key">Private Key</label>
+      {{ form.private_key(class="form-control") }}
+      {% if form.private_key.errors %}
+        <ul class="errors">
+          {% for error in form.private_key.errors %}
+            <li>{{ error }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </div>
+    
+    <div class="form-group">
+      {{ form.submit(class="btn btn-primary") }}
+    </div>
+  </form>
+  
+  {% if form.public_key.data %}
+    <hr>
+    <p>Note: If you update the keys, the old ones will be replaced.</p>
+  {% endif %}
+{% endblock %}

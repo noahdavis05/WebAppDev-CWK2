@@ -49,3 +49,8 @@ class EventForm(FlaskForm):
 
 class TicketForm(FlaskForm):
     submit = SubmitField('Buy Ticket')
+
+class StripeKeyForm(FlaskForm):
+    public_key = StringField('Public Key', validators=[DataRequired(), Length(min=10, max=255)])
+    private_key = StringField('Private Key', validators=[DataRequired(), Length(min=10, max=255)])
+    submit = SubmitField('Save Keys')

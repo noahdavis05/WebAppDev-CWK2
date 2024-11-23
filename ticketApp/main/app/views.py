@@ -1,15 +1,14 @@
 # app/views.py
 from flask import render_template, redirect, url_for, flash, request, jsonify
 from flask_login import login_user, logout_user, login_required, current_user
-from .models import User, Event, db, Ticket
-from .forms import SignupForm, LoginForm, EventForm, TicketForm
+from .models import User, Event, db, Ticket, StripeKey
+from .forms import SignupForm, LoginForm, EventForm, TicketForm, StripeKeyForm
 from . import app
 from datetime import datetime
 from sqlalchemy.exc import OperationalError
 import json
 import stripe
 
-stripe.api_key = 'sk_test_51PhsUnGETTbhg7YVDKnaOBIjVE2Aw4nOrBxbJqI6WzusPjJUxwTKi9qmvlPec7KX5NfFyf0YRVVYYYOAMmkA1vmv00HBO84orN'
 YOUR_DOMAIN = 'https://http://localhost:5000'
 
 @app.route('/home', methods=['GET', 'POST'])
@@ -171,6 +170,21 @@ def buy_ticket(event_id):
     if ticket_count >= event.guests:
         flash('All tickets for this event have been sold.', 'danger')
         return redirect(url_for('home'))
+    
+     # get the stripe keys of the event owner
+    print(event.event_owner)  # Debugging step
+    keys = StripeKey.query.filter_by(user_id=event.event_owner).all()
+    # Check if keys are returned and if so, access them
+    if keys:
+        # Access the decrypted public and private keys
+        priv_key = keys[0].private_key
+        stripe.api_key = priv_key
+        pub_key = keys[0].public_key
+        print(f"Private Key: {priv_key}, Public Key: {pub_key}")
+    else:
+       flash('This ticket vendor has not setup a payment system yet!','danger')
+       return(url_for('home'))
+
 
     form = TicketForm()
     if form.validate_on_submit():
@@ -330,3 +344,39 @@ def success(ticket_id):
     db.session.commit()
     flash('Ticket purchased successfully!', 'success')
     return redirect(url_for('home'))
+
+
+@app.route('/add-stripe', methods=['GET', 'POST'])
+@login_required
+def add_stripe():
+    # Check if the user already has a Stripe key saved
+    existing_stripe_key = StripeKey.query.filter_by(user_id=current_user.id).first()
+    
+    # If the user already has a Stripe key, pre-fill the form with their data
+    if existing_stripe_key:
+        form = StripeKeyForm(public_key=existing_stripe_key.public_key, private_key=existing_stripe_key.private_key)
+    else:
+        form = StripeKeyForm()
+
+    if form.validate_on_submit():
+        # If user already has a Stripe key, update it
+        if existing_stripe_key:
+            existing_stripe_key.public_key = form.public_key.data
+            existing_stripe_key.private_key = form.private_key.data
+        else:
+            # If no Stripe key exists, create a new one
+            new_stripe_key = StripeKey(
+                public_key=form.public_key.data,
+                private_key=form.private_key.data,
+                user_id=current_user.id
+            )
+            db.session.add(new_stripe_key)
+
+        # Commit the changes to the database
+        db.session.commit()
+
+        flash('Your Stripe keys have been saved/updated successfully!', 'success')
+        return redirect(url_for('events'))  # Redirect to the page where they can view their saved keys
+
+    return render_template('add_stripe.html', form=form)
+

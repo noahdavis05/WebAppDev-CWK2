@@ -2,9 +2,28 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import UserMixin
+import  os
+from cryptography.fernet import Fernet
 
 db = SQLAlchemy()
 bcrypt = Bcrypt()
+
+#load the secret key from environment variables
+secret_key = b'0CHWHXr60JrRm5sCmP40bWwHMHruNpa9AA0N1M2esYQ='
+cipher_suite = Fernet(secret_key)
+
+# Encrypt function
+def encrypt_key(key: str) -> str:
+    """Encrypts the API key"""
+    encrypted_key = cipher_suite.encrypt(key.encode())  # Convert the key to bytes and encrypt
+    return encrypted_key.decode()  # Return as string
+
+# Decrypt function
+def decrypt_key(encrypted_key: str) -> str:
+    """Decrypts the API key"""
+    decrypted_key = cipher_suite.decrypt(encrypted_key.encode())  # Convert to bytes and decrypt
+    return decrypted_key.decode()  # Return as string
+
 
 class User(db.Model, UserMixin):
     __tablename__ = 'users'
@@ -53,3 +72,41 @@ class Ticket(db.Model):
     def __repr__(self):
         return f"<Ticket {self.id}>"
     
+
+
+class StripeKey(db.Model):
+    __tablename__ = 'stripe_keys'
+
+    id = db.Column(db.Integer, primary_key=True)
+    # Store the encrypted public and private keys
+    _public_key = db.Column('public_key', db.String(255), nullable=False)
+    _private_key = db.Column('private_key', db.String(255), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
+
+    user = db.relationship('User', backref=db.backref('stripe_keys', lazy=True))
+
+    def __repr__(self):
+        return f"<StripeKey user_id={self.user_id} public_key={self.public_key}>"
+
+    @property
+    def public_key(self):
+        """Decrypt and return the public key."""
+        return decrypt_key(self._public_key)
+
+    @public_key.setter
+    def public_key(self, key):
+        """Encrypt and set the public key."""
+        self._public_key = encrypt_key(key)
+
+    @property
+    def private_key(self):
+        """Decrypt and return the private key."""
+        return decrypt_key(self._private_key)
+
+    @private_key.setter
+    def private_key(self, key):
+        """Encrypt and set the private key."""
+        self._private_key = encrypt_key(key)
+
+
