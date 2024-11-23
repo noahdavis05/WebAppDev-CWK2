@@ -156,7 +156,17 @@ def buy_ticket(event_id):
         return redirect(url_for('home'))
 
     # Count the tickets initially (for display purposes only)
-    ticket_count = Ticket.query.filter_by(event_id=event_id).count()
+    tickets = Ticket.query.filter_by(event_id=event_id)
+    
+
+    # now check for unpaid tickets older than created more than 30 mins ago, if there are, delete them.
+    for ticket in tickets:
+        if (datetime.now() - ticket.created_at).total_seconds() > 1800 and ticket.paid == 0:
+            db.session.delete(ticket)
+            db.session.commit()
+
+    tickets = Ticket.query.filter_by(event_id=event_id)
+    ticket_count = tickets.count()
 
     if ticket_count >= event.guests:
         flash('All tickets for this event have been sold.', 'danger')
