@@ -5,7 +5,7 @@
 /* Style the tabs container */
 .tabs {
     display: flex;
-    justify-content: space-around;
+    justify-content: left;
     margin-top: 20px;
     margin-bottom: 20px;
 }
