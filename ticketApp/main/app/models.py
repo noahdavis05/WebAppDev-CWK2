@@ -66,6 +66,7 @@ class Ticket(db.Model):
     ticket_used = db.Column(db.Boolean, nullable=False, default=False)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     scanned_at = db.Column(db.DateTime, nullable=True)
+    deleted = db.Column(db.Boolean, nullable=True, default = False)
 
     event = db.relationship('Event', backref='tickets')
 

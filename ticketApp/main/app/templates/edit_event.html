@@ -4,8 +4,8 @@
 <div class="container mt-5">
     <h1 class="mb-4">Edit Event</h1>
     <div class="alert alert-warning" role="alert">
-        Changing name, date, or time of the event will cause all qr codes to change.
-        Please warn all users not to use screenshotted qr codes!
+        Changing name, date, or time of the event will cause all QR codes to change.
+        Please warn all users not to use screenshotted QR codes!
     </div>
     <form method="POST" action="">
         {{ form.hidden_tag() }}
@@ -14,7 +14,7 @@
             <label for="event_name" class="form-label">Event Name</label>
             {{ form.event_name(class="form-control", value=event.event_name) }}
             {% for error in form.event_name.errors %}
-                <div class="text-danger">{{ error }}</div>
+                <div class="alert alert-danger text-white">{{ error }}</div>
             {% endfor %}
         </div>
         
@@ -22,7 +22,7 @@
             <label for="event_description" class="form-label">Event Description</label>
             <textarea id="event_description" name="event_description" class="form-control">{{ event.event_description }}</textarea>
             {% for error in form.event_description.errors %}
-                <div class="text-danger">{{ error }}</div>
+                <div class="alert alert-danger text-white">{{ error }}</div>
             {% endfor %}
         </div>
         
@@ -30,7 +30,7 @@
             <label for="date" class="form-label">Date</label>
             {{ form.date(class="form-control", value=event.date) }}
             {% for error in form.date.errors %}
-                <div class="text-danger">{{ error }}</div>
+                <div class="alert alert-danger text-white">{{ error }}</div>
             {% endfor %}
         </div>
         
@@ -38,7 +38,7 @@
             <label for="time" class="form-label">Time</label>
             {{ form.time(class="form-control", value=event_time_str) }}
             {% for error in form.time.errors %}
-                <div class="text-danger">{{ error }}</div>
+                <div class="alert alert-danger text-white">{{ error }}</div>
             {% endfor %}
         </div>
         
@@ -46,7 +46,7 @@
             <label for="location" class="form-label">Location</label>
             {{ form.location(class="form-control", value=event.location) }}
             {% for error in form.location.errors %}
-                <div class="text-danger">{{ error }}</div>
+                <div class="alert alert-danger text-white">{{ error }}</div>
             {% endfor %}
         </div>
         
@@ -54,7 +54,7 @@
             <label for="guests" class="form-label">Guests</label>
             {{ form.guests(class="form-control", value=event.guests) }}
             {% for error in form.guests.errors %}
-                <div class="text-danger">{{ error }}</div>
+                <div class="alert alert-danger text-white">{{ error }}</div>
             {% endfor %}
         </div>
         
@@ -62,7 +62,7 @@
             <label for="price" class="form-label">Price</label>
             {{ form.price(class="form-control", value=event.price) }}
             {% for error in form.price.errors %}
-                <div class="text-danger">{{ error }}</div>
+                <div class="alert alert-danger text-white">{{ error }}</div>
             {% endfor %}
         </div>
         
@@ -70,4 +70,5 @@
         <a href="{{ url_for('events') }}" class="btn btn-secondary">Cancel</a>
     </form>
 </div>
+<br>
 {% endblock %}

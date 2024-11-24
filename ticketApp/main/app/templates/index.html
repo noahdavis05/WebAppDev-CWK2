@@ -13,6 +13,8 @@
     <script src="{{ url_for('static', filename='js/flash.js') }}" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.4.4/build/qrcode.min.js"></script>
     <script src="{{ url_for('static', filename='js/qr_code.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/delete_ticket.js')}}"></script>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 <body>
     <h1>{{ message }}</h1>
@@ -65,12 +67,12 @@
     <div id="ticket-list" class="tabcontent">
         <h2>Your Tickets</h2>
         <div class="row">
-            {% if ticket_data|length == 0 %}
-            <p>No unused tickets</p>
-            {% endif %}
             {% for ticket in ticket_data %}
             <div class="col-md-4 d-flex align-items-stretch">
                 <div class="card ticket-card" id="card-{{ ticket.ticket_id }}" style="width: 18rem;">
+                    <div class="delete-btn" onclick="deleteTicket({{ ticket.ticket_id }})">
+                        &#128465; <!-- Recycling Bin Icon -->
+                    </div>
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title">{{ ticket.event_name }}</h5>
                         <p class="card-text">{{ ticket.event_date }} at {{ ticket.event_time }}</p>
@@ -89,12 +91,12 @@
     <div id="old-tickets" class="tabcontent">
         <h2>Your Tickets</h2>
         <div class="row">
-            {% if ticket_data|length == 0 %}
-            <p>No unused tickets</p>
-            {% endif %}
             {% for ticket in used_tickets %}
             <div class="col-md-4 d-flex align-items-stretch">
-                <div class="card ticket-card" id="card-{{ ticket.ticket_id }}" style="width: 18rem;">
+                <div class="card ticket-card" id="card-{{ ticket.id }}" style="width: 18rem;">
+                    <div class="delete-btn" onclick="deleteTicket({{ ticket.id }})">
+                        &#128465; <!-- Recycling Bin Icon -->
+                    </div>
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title">{{ ticket.event.event_name }}</h5>
                         <p class="card-text">{{ ticket.event.date }} at {{ ticket.event.time }}</p>

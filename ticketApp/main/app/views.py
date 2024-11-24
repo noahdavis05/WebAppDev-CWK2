@@ -16,18 +16,24 @@ YOUR_DOMAIN = 'https://http://localhost:5000'
 def home():
     # Use current_user to get the logged-in user's username
     username = current_user.username 
-    
-    # get the events created by the user
-    events = Event.query.filter_by(event_owner=current_user.id).all()
-    
+
     # get all events by any user that are in the future
     future_events = Event.query.filter(Event.date >= datetime.now()).all()
     for event in future_events:
         event.price = "{:.2f}".format(event.price)
     
     # get all the tickets for the user
-    user_tickets = Ticket.query.filter_by(ticket_owner=current_user.id, ticket_used=0).all()
-    used_tickets = Ticket.query.filter_by(ticket_owner=current_user.id, ticket_used=1).all()
+    user_tickets = Ticket.query.filter_by(ticket_owner=current_user.id, ticket_used=0, deleted=0).all()
+    future_tickets = []
+    for ticket in user_tickets:
+        # Convert ticket.event.date to a datetime object if it's a string
+        event_date = datetime.strptime(ticket.event.date, '%Y-%m-%d').date() if isinstance(ticket.event.date, str) else ticket.event.date
+        
+        # Compare the dates (both are now datetime.date objects)
+        if event_date >= datetime.today().date():
+            future_tickets.append(ticket)
+
+    used_tickets = Ticket.query.filter_by(ticket_owner=current_user.id, ticket_used=1, deleted=0).all()
     # in used tickets make all the datetimes in style dd-mm-yyyy hh-mm
     for ticket in used_tickets:
         if ticket != None:
@@ -38,7 +44,7 @@ def home():
 
     # Prepare the QR code data for each ticket
     ticket_data = []
-    for ticket in user_tickets:
+    for ticket in future_tickets:
         event = Event.query.get(ticket.event_id)
         qr_data = {
             'ticket_id': str(ticket.id),
@@ -52,8 +58,25 @@ def home():
         # Append the ticket data along with its QR code data into the list
         ticket_data.append(qr_data)
 
-    # Setup the event creation form
-    
+    if request.method == 'POST':
+        try:
+            data = request.get_json()
+            if not data:
+                return jsonify({'success': False, 'message': 'Invalid JSON data received.'}), 400
+            
+            ticket_id = data.get('ticket_id')
+            if ticket.id:
+                print(ticket_id)
+                # now make the deleted value true
+                ticket = Ticket.query.get(ticket_id)
+                ticket.deleted = True
+                db.session.commit()
+                return jsonify({'success': True, 'message': f'ID valid'})
+            else:
+                return jsonify({'success': False, 'message': 'invalid id'}), 400
+        except Exception as e:
+            # Catch any other errors and return a 500 error with the error message
+            return jsonify({'success': False, 'message': f'Error processing id: {str(e)}'}), 500
 
     return render_template('index.html', message=f"Hello, {username}!", 
                            future_events=future_events, ticket_data=ticket_data, used_tickets=used_tickets)

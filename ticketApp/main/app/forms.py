@@ -3,6 +3,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, TextAreaField, DateField, TimeField, IntegerField, FloatField
 from wtforms.validators import DataRequired, Email, EqualTo, ValidationError, Length
 from .models import User
+from datetime import date
 
 
 
@@ -28,6 +29,7 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Login')
 
+
 class EventForm(FlaskForm):
     event_name = StringField('Event Name', validators=[
         DataRequired(),
@@ -39,13 +41,20 @@ class EventForm(FlaskForm):
     ])
     guests = IntegerField('Number of Guests', validators=[DataRequired()])
     price = FloatField('Ticket Price', validators=[DataRequired()])
-    date = DateField('Event Date', validators=[DataRequired()], format='%Y-%m-%d')
+    date = DateField('Event Date', validators=[
+        DataRequired()
+    ], format='%Y-%m-%d')
     time = TimeField('Event Time', validators=[DataRequired()], format='%H:%M')
     location = StringField('Event Location', validators=[
         DataRequired(),
         Length(max=200, message="Location must be 200 characters or fewer.")
     ])
     submit = SubmitField('Create Event')
+
+    # Custom validator for date
+    def validate_date(form, field):
+        if field.data <= date.today():
+            raise ValidationError("The event date must be in the future.")
 
 class TicketForm(FlaskForm):
     submit = SubmitField('Buy Ticket')
