@@ -6,6 +6,7 @@ from .forms import SignupForm, LoginForm, EventForm, TicketForm, StripeKeyForm
 from . import app
 from datetime import datetime
 from sqlalchemy.exc import OperationalError
+from sqlalchemy.orm import joinedload
 import json
 import stripe
 
@@ -23,7 +24,11 @@ def home():
         event.price = "{:.2f}".format(event.price)
     
     # get all the tickets for the user
-    user_tickets = Ticket.query.filter_by(ticket_owner=current_user.id, ticket_used=0, deleted=0).all()
+    user_tickets = Ticket.query.options(
+        joinedload(Ticket.event)
+    ).filter_by(
+        ticket_owner=current_user.id, ticket_used=0, deleted=0
+    ).join(Event).order_by(Event.date).all()
     future_tickets = []
     for ticket in user_tickets:
         # Convert ticket.event.date to a datetime object if it's a string
@@ -39,6 +44,7 @@ def home():
         if ticket != None:
             if ticket.scanned_at:
                 ticket.scanned_at = ticket.scanned_at.strftime("%d-%m-%Y %H:%M")
+
     #and don't commit so these changes are only visible on the view, but not in db
 
 

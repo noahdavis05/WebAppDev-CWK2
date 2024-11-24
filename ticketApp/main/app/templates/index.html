@@ -14,10 +14,11 @@
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.4.4/build/qrcode.min.js"></script>
     <script src="{{ url_for('static', filename='js/qr_code.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/delete_ticket.js')}}"></script>
+    
     <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 <body>
-    <h1>{{ message }}</h1>
+    <h3>{{ message }}</h3>
 
     <!-- Tabs navigation -->
     <div class="tabs">
@@ -40,10 +41,18 @@
 
     <!-- Tab content -->
     <div id="otherEvents" class="tabcontent">
-        <h2>Other Events</h2>
+        <div class="d-flex align-items-center justify-content-left">
+            <h4>Other Events</h4>
+            <button class="btn btn-primary" onclick="toggleFilters()">Filters</button>
+        </div>
+        <div id="filter-container" class="">
+            <input type="text" class="form-control" placeholder="Search for events, location, description..." aria-label="Search" id="searchBar">
+            
+            <input type="date" class="form-control" placeholder="Select date" aria-label="Date Picker" id="datePicker">
+        </div>
         <div class="row">
             {% for event in future_events %}
-            <div class="col-md-4 d-flex align-items-stretch">
+            <div class="event col-md-4 d-flex align-items-stretch" >
                 <div class="card" style="width: 18rem;">
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title">{{ event.event_name }}</h5>
@@ -65,7 +74,7 @@
     </div>
 
     <div id="ticket-list" class="tabcontent">
-        <h2>Your Tickets</h2>
+        <h4>Your Tickets</h4>
         <div class="row">
             {% for ticket in ticket_data %}
             <div class="col-md-4 d-flex align-items-stretch">
@@ -89,7 +98,7 @@
         </div>
     </div>
     <div id="old-tickets" class="tabcontent">
-        <h2>Your Tickets</h2>
+        <h4>Your Tickets</h4>
         <div class="row">
             {% for ticket in used_tickets %}
             <div class="col-md-4 d-flex align-items-stretch">
@@ -122,6 +131,7 @@
             initializeQRCodes();
         });
     </script>
+    <script src="{{ url_for('static', filename='js/filters.js')}}"></script>
 </body>
 </html>
 {% endblock %}

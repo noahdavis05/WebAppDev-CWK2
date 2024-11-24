@@ -91,3 +91,19 @@ a.tablinks{
     position: relative;
 }
 
+#filter-container{
+    padding-bottom: 5px;
+    display: none;
+    flex-direction: row;
+    align-items: flex-start;
+}
+
+.hidden {
+    display: none !important; /* Overrides Bootstrap styles */
+}
+
+.visible {
+    display: block !important; /* Ensures the element is displayed as block */
+}
+
+
