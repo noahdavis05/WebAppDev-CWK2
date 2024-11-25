@@ -7,31 +7,81 @@ function searchEvents() {
     const dateFilter = datePicker.value; // Retrieve the selected date
     const elements = document.getElementsByClassName('event');
 
-    for (let element of elements) {
-        const title = element.querySelector('.card-title').textContent.toLowerCase();
-        const subtitle = element.querySelector('.card-subtitle').textContent.toLowerCase();
-        const description = element.querySelector('.card-text').textContent.toLowerCase();
+    // delete everything within id events-section
+    const events_section = document.getElementById('events-section');
+    // iterate through events section to get each card value from each row
+    const rows = events_section.getElementsByClassName('row');
+    const eventsArray = [];
 
-        // Check if any of the fields match the search term
+    for (let row of rows) {
+        const cards = row.getElementsByClassName('event');
+        for (let card of cards) {
+            eventsArray.push(card);
+        }
+    }
+
+    const filteredEventsArray = [];
+    const invalidEventsArray = [];
+
+    eventsArray.forEach(event => {
+        const title = event.querySelector('.card-title').textContent.toLowerCase();
+        const subtitle = event.querySelector('.card-subtitle').textContent.toLowerCase();
+        const description = event.querySelector('.card-text').textContent.toLowerCase();
+
         const matchesSearch =
             title.includes(search) || subtitle.includes(search) || description.includes(search);
 
-        console.log(matchesSearch);
-
-        // Check if the event matches the date filter (if provided)
         const matchesDate = dateFilter
             ? subtitle.includes(dateFilter) // Assuming date is part of the subtitle
             : true; // No date filter means include all events
 
-        // Show or hide the event
-        if (matchesSearch && matchesDate) {
-            element.classList.remove('d-none');
-            element.classList.add('d-flex');
+        if (matchesDate && matchesSearch) {
+            filteredEventsArray.push(event);
         } else {
-            element.classList.add('d-none');
-            element.classList.remove('d-flex');
+            invalidEventsArray.push(event);
         }
+    });
+
+    console.log(filteredEventsArray);
+    console.log(invalidEventsArray);
+
+    console.log(filteredEventsArray);
+    
+    events_section.innerHTML = '';
+
+    var count = 0;
+    const newRow = document.createElement('div');
+    newRow.className = 'row';
+    events_section.appendChild(newRow);
+    for (let event of filteredEventsArray){
+        if (count == 2){
+            // now we need a new row element
+            const newRow = document.createElement('div');
+            newRow.className = 'row';
+            events_section.appendChild(newRow);
+            count = 0; // Reset count after creating a new row
+        }
+        event.classList.add('d-flex');
+        event.classList.remove('d-none');
+        newRow.appendChild(event);
+        count += 1;
     }
+
+    for (let event of invalidEventsArray){
+        if (count == 2){
+            const newRow = document.createElement('div');
+            newRow.className = 'row';
+            events_section.appendChild(newRow);
+            count =0;
+        }
+        event.classList.add('d-none');
+        event.classList.remove('d-flex');
+        newRow.appendChild(event);
+        count += 1
+    }
+    
+
+
 }
 
 

@@ -50,27 +50,29 @@
             
             <input type="date" class="form-control" placeholder="Select date" aria-label="Date Picker" id="datePicker">
         </div>
-        <div class="row">
-            {% for event in future_events %}
-            <div class="event col-md-4 d-flex align-items-stretch" >
-                <div class="card" style="width: 18rem;">
-                    <div class="card-body d-flex flex-column">
-                        <h5 class="card-title">{{ event.event_name }}</h5>
-                        <h6 class="card-subtitle mb-2 text-muted">{{ event.date }} {{ event.time }}</h6>
-                        <p class="card-text">{{ event.event_description }}</p>
-                        <p class="card-text">£{{ event.price}}</p>
-                        <div class="d-flex justify-content-left mt-auto">
-                            <a href="/event/{{ event.id }}" class="btn btn-primary">View Event</a>
-                            <a href="/event/{{ event.id }}/buy" class="btn btn-success">Buy Ticket</a>
+            <div id="events-section">
+                <div class="row">
+                    {% for event in future_events %}
+                    <div class="event col-md-4 d-flex align-items-stretch" >
+                        <div class="card" style="width: 18rem;">
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title">{{ event.event_name }}</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">{{ event.date }} {{ event.time }}</h6>
+                                <p class="card-text">{{ event.event_description }}</p>
+                                <p class="card-text">£{{ event.price}}</p>
+                                <div class="d-flex justify-content-left mt-auto">
+                                    <a href="/event/{{ event.id }}" class="btn btn-primary">View Event</a>
+                                    <a href="/event/{{ event.id }}/buy" class="btn btn-success">Buy Ticket</a>
+                                </div>
+                            </div>
                         </div>
                     </div>
+                    {% if loop.index % 3 == 0 and not loop.last %}
+                    </div><div class="row">
+                    {% endif %}
+                    {% endfor %}
                 </div>
             </div>
-            {% if loop.index % 3 == 0 and not loop.last %}
-            </div><div class="row">
-            {% endif %}
-            {% endfor %}
-        </div>
     </div>
 
     <div id="ticket-list" class="tabcontent">
