@@ -26,10 +26,11 @@ function searchEvents() {
     eventsArray.forEach(event => {
         const title = event.querySelector('.card-title').textContent.toLowerCase();
         const subtitle = event.querySelector('.card-subtitle').textContent.toLowerCase();
-        const description = event.querySelector('.card-text').textContent.toLowerCase();
+        const description = event.querySelector('#description').textContent.toLowerCase();
+        const location = event.querySelector('#location').textContent.toLocaleLowerCase();
 
         const matchesSearch =
-            title.includes(search) || subtitle.includes(search) || description.includes(search);
+            title.includes(search) || subtitle.includes(search) || description.includes(search) || location.includes(search);
 
         const matchesDate = dateFilter
             ? subtitle.includes(dateFilter) // Assuming date is part of the subtitle
