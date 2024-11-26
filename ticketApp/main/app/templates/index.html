@@ -80,7 +80,7 @@
         <h4>Your Tickets</h4>
         <div class="row">
             {% for ticket in ticket_data %}
-            <div class="col-md-4 d-flex align-items-stretch">
+            <div class="col-md-4 d-flex align-items-stretch active-ticket" >
                 <div class="card ticket-card" id="card-{{ ticket.ticket_id }}" style="width: 18rem;">
                     <div class="delete-btn" onclick="deleteTicket({{ ticket.ticket_id }})">
                         &#128465; <!-- Recycling Bin Icon -->
@@ -105,7 +105,7 @@
         <div class="row">
             {% for ticket in used_tickets %}
             <div class="col-md-4 d-flex align-items-stretch">
-                <div class="card ticket-card" id="card-{{ ticket.id }}" style="width: 18rem;">
+                <div class="card ticket-card-used" id="card-{{ ticket.id }}" style="width: 18rem;">
                     <div class="delete-btn" onclick="deleteTicket({{ ticket.id }})">
                         &#128465; <!-- Recycling Bin Icon -->
                     </div>
