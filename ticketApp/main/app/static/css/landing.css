@@ -1,0 +1,65 @@
+body {
+    animation: gradient-rotate 10s infinite linear;
+    background: linear-gradient(45deg, #6a0dad, #9b59b6, #00aaff);
+    background-size: 400% 400%;
+    color: #fff;
+    margin: 0;
+}
+
+@keyframes gradient-rotate {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Navbar Styling */
+.navbar {
+    background-color: rgba(0, 0, 0, 0.3);
+}
+.navbar a {
+    color: #fff;
+}
+
+/* Full-screen Sections */
+.section {
+    height: 100vh; /* Full viewport height */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Card Styling */
+.card {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: #fff;
+    transition: transform 0.3s ease;
+}
+.card:hover {
+    transform: translateY(-10px);
+}
+
+.card-title {
+    font-size: 1.5rem;
+}
+
+.card-group {
+    gap: 20px;
+}
+
+#main-row {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+/* More Info Section */
+.more-info {
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+/* Smooth scrolling for anchor links */
+html {
+    scroll-behavior: smooth;
+}
