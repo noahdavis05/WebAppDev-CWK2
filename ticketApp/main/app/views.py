@@ -159,6 +159,8 @@ def login():
             return redirect(url_for('home'))
         else:
             flash('Login Unsuccessful. Please check email and password.', 'danger')
+
+    
     
     return render_template('login.html', form=form)
 
@@ -166,6 +168,9 @@ def login():
 @app.route('/logout')
 @login_required
 def logout():
+    if not current_user.is_authenticated:
+        flash('You need to be logged in to log out.', 'danger')
+        return redirect(url_for('/'))
     logout_user()
     # flash('You have been logged out.', 'info')
     return redirect(url_for('landing'))
