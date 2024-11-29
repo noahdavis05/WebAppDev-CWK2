@@ -37,3 +37,7 @@ body {
 .alert-danger{
     background-color: red !important;
 }
+
+a.signup{
+    color: #fff;
+}
