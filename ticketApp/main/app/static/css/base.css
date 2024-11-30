@@ -38,6 +38,12 @@ body {
     background-color: red !important;
 }
 
-a.signup{
+#signup{
     color: #fff;
+    text-decoration: underline;
+}
+
+#signup:hover{
+    color: #ffffff71;
+    text-decoration: underline;
 }

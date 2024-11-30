@@ -1,0 +1,88 @@
+2024-11-30 15:54:21,435 - app - ERROR - Exception on /signup [GET]
+Traceback (most recent call last):
+  File "C:\Users\noah\OneDrive\Documents\University work\year 2\Web Application Development\coursework2\WebAppDev-CWK2\ticketApp\venv\Lib\site-packages\flask\app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\noah\OneDrive\Documents\University work\year 2\Web Application Development\coursework2\WebAppDev-CWK2\ticketApp\venv\Lib\site-packages\flask\app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\noah\OneDrive\Documents\University work\year 2\Web Application Development\coursework2\WebAppDev-CWK2\ticketApp\venv\Lib\site-packages\flask\app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\noah\OneDrive\Documents\University work\year 2\Web Application Development\coursework2\WebAppDev-CWK2\ticketApp\venv\Lib\site-packages\flask\app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\noah\OneDrive\Documents\University work\year 2\Web Application Development\coursework2\WebAppDev-CWK2\ticketApp\main\app\views.py", line 141, in signup
+    app.logger.error('An error occurred while creating an account.' + form.errors.items())  # Log the error
+                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~
+TypeError: can only concatenate str (not "dict_items") to str
+2024-11-30 15:54:41,749 - app - ERROR - An error occurred while creating an account.dict_items([])
+2024-11-30 15:54:56,350 - app - ERROR - An error occurred while creating an account.dict_items([('username', ['Username is already taken.']), ('email', ['Email is already in use.']), ('confirm_password', ['Field must be equal to password.'])])
+2024-11-30 15:56:27,641 - app - ERROR - An error occurred while creating an account  :dict_items([])
+2024-11-30 15:56:39,886 - app - ERROR - An error occurred while creating an account  :dict_items([('username', ['Username is already taken.']), ('confirm_password', ['Field must be equal to password.'])])
+2024-11-30 15:57:26,402 - app - INFO - User noahD created an account.
+2024-11-30 15:58:55,591 - app - INFO - User noahdavis05 logged in.
+2024-11-30 15:59:10,672 - app - INFO - User noahdavis05 logged in.
+2024-11-30 15:59:27,550 - app - ERROR - User with email poo not found.
+2024-11-30 16:00:59,632 - app - INFO - User noahdavis05 logged in.
+2024-11-30 16:01:01,193 - app - INFO - User noahdavis05 logged out.
+2024-11-30 16:19:52,122 - app - INFO - User accessed the landing page.
+2024-11-30 16:19:54,580 - app - ERROR - An error occurred while creating an account  :dict_items([])
+2024-11-30 16:20:12,080 - app - ERROR - An error occurred while creating an account  :dict_items([('confirm_password', ['Field must be equal to password.'])])
+2024-11-30 16:20:17,219 - app - INFO - User noahfartvis created an account.
+2024-11-30 16:20:25,607 - app - ERROR - User with email fart@gmai.com not found, during log in.
+2024-11-30 16:20:30,368 - app - INFO - User noahfartvis logged in.
+2024-11-30 16:20:41,111 - app - ERROR - Exception on /event/1/buy [POST]
+Traceback (most recent call last):
+  File "C:\Users\noah\OneDrive\Documents\University work\year 2\Web Application Development\coursework2\WebAppDev-CWK2\ticketApp\venv\Lib\site-packages\flask\app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\noah\OneDrive\Documents\University work\year 2\Web Application Development\coursework2\WebAppDev-CWK2\ticketApp\venv\Lib\site-packages\flask\app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\noah\OneDrive\Documents\University work\year 2\Web Application Development\coursework2\WebAppDev-CWK2\ticketApp\venv\Lib\site-packages\flask\app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\noah\OneDrive\Documents\University work\year 2\Web Application Development\coursework2\WebAppDev-CWK2\ticketApp\venv\Lib\site-packages\flask\app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\noah\OneDrive\Documents\University work\year 2\Web Application Development\coursework2\WebAppDev-CWK2\ticketApp\venv\Lib\site-packages\flask_login\utils.py", line 290, in decorated_view
+    return current_app.ensure_sync(func)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\noah\OneDrive\Documents\University work\year 2\Web Application Development\coursework2\WebAppDev-CWK2\ticketApp\main\app\views.py", line 250, in buy_ticket
+    app.logger.info(f"User {current_user.username} bought a ticket for event id {event_id} , at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}.")
+                            ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\noah\OneDrive\Documents\University work\year 2\Web Application Development\coursework2\WebAppDev-CWK2\ticketApp\venv\Lib\site-packages\sqlalchemy\orm\attributes.py", line 566, in __get__
+    return self.impl.get(state, dict_)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\noah\OneDrive\Documents\University work\year 2\Web Application Development\coursework2\WebAppDev-CWK2\ticketApp\venv\Lib\site-packages\sqlalchemy\orm\attributes.py", line 1086, in get
+    value = self._fire_loader_callables(state, key, passive)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\noah\OneDrive\Documents\University work\year 2\Web Application Development\coursework2\WebAppDev-CWK2\ticketApp\venv\Lib\site-packages\sqlalchemy\orm\attributes.py", line 1116, in _fire_loader_callables
+    return state._load_expired(state, passive)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\noah\OneDrive\Documents\University work\year 2\Web Application Development\coursework2\WebAppDev-CWK2\ticketApp\venv\Lib\site-packages\sqlalchemy\orm\state.py", line 803, in _load_expired
+    self.manager.expired_attribute_loader(self, toload, passive)
+  File "C:\Users\noah\OneDrive\Documents\University work\year 2\Web Application Development\coursework2\WebAppDev-CWK2\ticketApp\venv\Lib\site-packages\sqlalchemy\orm\loading.py", line 1670, in load_scalar_attributes
+    result = load_on_ident(
+             ^^^^^^^^^^^^^^
+  File "C:\Users\noah\OneDrive\Documents\University work\year 2\Web Application Development\coursework2\WebAppDev-CWK2\ticketApp\venv\Lib\site-packages\sqlalchemy\orm\loading.py", line 509, in load_on_ident
+    return load_on_pk_identity(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\noah\OneDrive\Documents\University work\year 2\Web Application Development\coursework2\WebAppDev-CWK2\ticketApp\venv\Lib\site-packages\sqlalchemy\orm\loading.py", line 694, in load_on_pk_identity
+    session.execute(
+  File "C:\Users\noah\OneDrive\Documents\University work\year 2\Web Application Development\coursework2\WebAppDev-CWK2\ticketApp\venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2362, in execute
+    return self._execute_internal(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\noah\OneDrive\Documents\University work\year 2\Web Application Development\coursework2\WebAppDev-CWK2\ticketApp\venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2237, in _execute_internal
+    conn = self._connection_for_bind(bind)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\noah\OneDrive\Documents\University work\year 2\Web Application Development\coursework2\WebAppDev-CWK2\ticketApp\venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2101, in _connection_for_bind
+    TransactionalContext._trans_ctx_check(self)
+  File "C:\Users\noah\OneDrive\Documents\University work\year 2\Web Application Development\coursework2\WebAppDev-CWK2\ticketApp\venv\Lib\site-packages\sqlalchemy\engine\util.py", line 111, in _trans_ctx_check
+    raise exc.InvalidRequestError(
+sqlalchemy.exc.InvalidRequestError: Can't operate on closed transaction inside context manager.  Please complete the context manager before emitting further commands.
+2024-11-30 16:30:06,937 - app - INFO - User noahfartvis bought a ticket for event id 1 at 2024-11-30 16:30:06.
+2024-11-30 16:30:47,405 - app - INFO - User noahfartvis logged out.
+2024-11-30 16:30:47,415 - app - INFO - User accessed the landing page.
+2024-11-30 16:31:01,151 - app - INFO - User noahfartvis logged in.
