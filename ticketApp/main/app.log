@@ -86,3 +86,9 @@ sqlalchemy.exc.InvalidRequestError: Can't operate on closed transaction inside c
 2024-11-30 16:30:47,405 - app - INFO - User noahfartvis logged out.
 2024-11-30 16:30:47,415 - app - INFO - User accessed the landing page.
 2024-11-30 16:31:01,151 - app - INFO - User noahfartvis logged in.
+2024-11-30 16:57:30,105 - app - INFO - User noahfartvis logged out.
+2024-11-30 16:57:30,115 - app - INFO - User accessed the landing page.
+2024-11-30 16:57:35,248 - app - INFO - User noahdavis05 logged in.
+2024-11-30 16:57:38,495 - app - INFO - Ticket 90 deleted successfully.
+2024-11-30 16:57:40,655 - app - INFO - Ticket 91 deleted successfully.
+2024-11-30 17:07:00,174 - app - INFO - Ticket 92 deleted successfully.

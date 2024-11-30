@@ -10,30 +10,30 @@ from sqlalchemy.orm import joinedload
 import json
 import stripe
 
-YOUR_DOMAIN = 'https://http://localhost:5000'
+YOUR_DOMAIN = 'https://noahdavis.pythonanywhere.com/'
 
 @app.route('/home', methods=['GET', 'POST'])
 @login_required
 def home():
     # Use current_user to get the logged-in user's username
-    username = current_user.username 
+    username = current_user.username
 
     # get all events by any user that are in the future
     future_events = Event.query.filter(Event.date >= datetime.now()).all()
     for event in future_events:
         event.price = "{:.2f}".format(event.price)
-    
+
     # get all the tickets for the user
     user_tickets = Ticket.query.options(
         joinedload(Ticket.event)
     ).filter_by(
-        ticket_owner=current_user.id, ticket_used=0, deleted=0, paid=1
+        ticket_owner=current_user.id, ticket_used=0, deleted=0
     ).join(Event).order_by(Event.date).all()
     future_tickets = []
     for ticket in user_tickets:
         # Convert ticket.event.date to a datetime object if it's a string
         event_date = datetime.strptime(ticket.event.date, '%Y-%m-%d').date() if isinstance(ticket.event.date, str) else ticket.event.date
-        
+
         # Compare the dates (both are now datetime.date objects)
         if event_date >= datetime.today().date():
             future_tickets.append(ticket)
@@ -69,7 +69,7 @@ def home():
             data = request.get_json()
             if not data:
                 return jsonify({'success': False, 'message': 'Invalid JSON data received.'}), 400
-            
+
             ticket_id = data.get('ticket_id')
             if ticket.id:
                 print(ticket_id)
@@ -77,17 +77,14 @@ def home():
                 ticket = Ticket.query.get(ticket_id)
                 ticket.deleted = True
                 db.session.commit()
-                app.logger.info(f'Ticket {ticket_id} deleted successfully.')
                 return jsonify({'success': True, 'message': f'ID valid'})
             else:
-                app.logger.error(f'Invalid id received: {ticket_id} when trying to delete ticket.')
                 return jsonify({'success': False, 'message': 'invalid id'}), 400
         except Exception as e:
             # Catch any other errors and return a 500 error with the error message
-            app.logger.error(f'Error processing ticket deletion: {str(e)}')
             return jsonify({'success': False, 'message': f'Error processing id: {str(e)}'}), 500
 
-    return render_template('index.html', message=f"Hello, {username}!", 
+    return render_template('index.html', message=f"Hello, {username}!",
                            future_events=future_events, ticket_data=ticket_data, used_tickets=used_tickets)
 
 
@@ -127,11 +124,11 @@ def events():
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     form = SignupForm()
-    
+
     if form.validate_on_submit():
         # Create the new user
         user = User(username=form.username.data, email=form.email.data)
-        
+
         # Hash the password before storing it
         user.set_password(form.password.data)
 
@@ -140,14 +137,14 @@ def signup():
 
         flash('Account created successfully!', 'success')
         login_user(user)  # Log in the user
-        app.logger.info(f'User {user.username} created an account.')  
+        app.logger.info(f'User {user.username} created an account.')
         return redirect(url_for('login'))
     else:
         app.logger.error('An error occurred while creating an account  :' + str(form.errors.items()))  # Log the error
         for field, errors in form.errors.items():
             for error in errors:
                 flash(f'{field.capitalize()}: {error}', 'danger')
-    
+
     # Render the template with form and error messages if there are validation errors
     return render_template('signup.html', form=form)
 
@@ -160,18 +157,18 @@ def login():
 
         # Check if user exists
         if user is None:
-            app.logger.error(f'User with email {form.email.data} not found, during log in.')  
+            app.logger.error(f'User with email {form.email.data} not found, during log in.')
             flash('Login Unsuccessful. Please check email and password.', 'danger')
         elif user and user.check_password(form.password.data):  # Check if password matches
             login_user(user)
-            app.logger.info(f'User {user.username} logged in.')  
+            app.logger.info(f'User {user.username} logged in.')
             return redirect(url_for('home'))
         else:
-            app.logger.error(f'User {user.username} failed to log in.')  
+            app.logger.error(f'User {user.username} failed to log in.')
             flash('Login Unsuccessful. Please check email and password.', 'danger')
 
-    
-    
+
+
     return render_template('login.html', form=form)
 
 
@@ -221,7 +218,7 @@ def buy_ticket(event_id):
         flash('This ticket vendor has not set up a payment system yet!', 'danger')
         app.logger.error(f'User tried to buy ticket for event id {event_id}, but no payment system is set up.')
         return redirect(url_for('home'))
-    
+
     stripe.api_key = keys.private_key
     form = TicketForm()
 
@@ -340,7 +337,7 @@ def scan_ticket():
 @app.route('/edit-event/<int:event_id>', methods=['GET', 'POST'])
 @login_required
 def edit_event(event_id):
-    # firstly check the logged in user owns the event 
+    # firstly check the logged in user owns the event
     event = Event.query.get(event_id)
     if event.event_owner != current_user.id:
         app.logger.error(f'User who did not create the event {event_id} tried to edit it.')
@@ -362,7 +359,7 @@ def edit_event(event_id):
         flash('Succesfully updated event!', 'success')
         app.logger.info(f"User {current_user.username} updated event {event_id} at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}.")
         return redirect(url_for('events'))
-    
+
     event_time_str = event.time.strftime("%H:%M")
     return render_template('edit_event.html', form=form, event=event, event_time_str=event_time_str)
 
@@ -401,7 +398,7 @@ def success(ticket_id):
 def add_stripe():
     # Check if the user already has a Stripe key saved
     existing_stripe_key = StripeKey.query.filter_by(user_id=current_user.id).first()
-    
+
     # If the user already has a Stripe key, pre-fill the form with their data
     if existing_stripe_key:
         form = StripeKeyForm(public_key=existing_stripe_key.public_key, private_key=existing_stripe_key.private_key)
