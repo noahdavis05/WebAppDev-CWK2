@@ -82,6 +82,9 @@
             {% for ticket in ticket_data %}
             <div class="col-md-4 d-flex align-items-stretch active-ticket" >
                 <div class="card ticket-card" id="card-{{ ticket.ticket_id }}" style="width: 18rem;">
+                    <div class="delete-btn" onclick="deleteTicket({{ ticket.id }})">
+                        &#128465; <!-- Recycling Bin Icon -->
+                    </div>
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title">{{ ticket.event_name }}</h5>
                         <p class="card-text">{{ ticket.event_date }} at {{ ticket.event_time }}</p>

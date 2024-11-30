@@ -27,7 +27,7 @@ def home():
     user_tickets = Ticket.query.options(
         joinedload(Ticket.event)
     ).filter_by(
-        ticket_owner=current_user.id, ticket_used=0, deleted=0
+        ticket_owner=current_user.id, ticket_used=0, deleted=0, paid=1
     ).join(Event).order_by(Event.date).all()
     future_tickets = []
     for ticket in user_tickets:
@@ -72,6 +72,7 @@ def home():
         try:
             data = request.get_json()
             if not data:
+                app.logger.error('Invalid JSON data received when trying to delete.')  # Log the error
                 return jsonify({'success': False, 'message': 'Invalid JSON data received.'}), 400
 
             ticket_id = data.get('ticket_id')
@@ -81,11 +82,14 @@ def home():
                 ticket = Ticket.query.get(ticket_id)
                 ticket.deleted = True
                 db.session.commit()
+                app.logger.info(f"User {current_user.username} deleted ticket id {ticket_id} at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}.")
                 return jsonify({'success': True, 'message': f'ID valid'})
             else:
+                app.logger.error('Invalid ID when trying to delete.')
                 return jsonify({'success': False, 'message': 'invalid id'}), 400
         except Exception as e:
             # Catch any other errors and return a 500 error with the error message
+            app.logger.error(f'Error processing id: {str(e)}')
             return jsonify({'success': False, 'message': f'Error processing id: {str(e)}'}), 500
 
     return render_template('index.html', message=f"Hello, {username}!",
@@ -279,6 +283,7 @@ def scan_ticket():
             # Get QR code data from the AJAX request (JSON)
             data = request.get_json()
             if not data:
+                app.logger.error('Invalid JSON data received when trying to scan.')  # Log the error
                 return jsonify({'success': False, 'message': 'Invalid JSON data received.'}), 400
 
             qr_code = data.get('qr_code')  # Extract QR code data from the received JSON
@@ -293,21 +298,28 @@ def scan_ticket():
                 # now validate the other variables match that of the ticker
                 event = Event.query.get(ticket.event_id)
                 if not event:
+                    app.logger.error(f'Invalid event scanned from ticket ')
                     return jsonify({'success': False, 'message': 'Invalid ticket.'}), 404
                 if event.event_name != data['event_name']:
+                    app.logger.error(f'Invalid event scanned from ticket ')
                     return jsonify({'success': False, 'message': 'Invalid ticket.'}), 400
                 if event.date.strftime('%Y-%m-%d') != data['event_date']:
+                    app.logger.error(f'Invalid event scanned from ticket ')
                     return jsonify({'success': False, 'message': 'Invalid ticket.'}), 400
                 if event.time.strftime('%H:%M:%S') != data['event_time']:
+                    app.logger.error(f'Invalid event scanned from ticket ')
                     return jsonify({'success': False, 'message': 'Invalid ticket.'}), 400
                 if str(ticket.ticket_owner) != str(data['ticket_owner']):
+                    app.logger.error(f'Invalid event scanned from ticket ')
                     return jsonify({'success': False, 'message': 'Invalid ticket.'}), 400
                 # now check if the ticket has already been used
                 if ticket.ticket_used:
+                    app.logger.error(f'Ticket has already been used.')
                     return jsonify({'success': False, 'message': 'Ticket has already been used.'}), 400
                 # get the event from the ticket
                 event = Event.query.get(ticket.event_id)
                 if current_user.id != event.event_owner:
+                    app.logger.error(f'User who did not own the event tried to scan a ticket.')
                     return jsonify({'success': False,'message': 'This ticket is not for your event'})
                 # now update the ticket to show it has been used
                 print("trying to save")
@@ -316,12 +328,15 @@ def scan_ticket():
                 db.session.commit()
 
                 #print(data)
+                app.logger.info(f"User {current_user.username} scanned ticket id {ticket.id} at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}.")
                 return jsonify({'success': True, 'message': f'Ticket successfully scanned'})
             else:
+                app.logger.error('No QR code data received.')
                 return jsonify({'success': False, 'message': 'No QR code data received.'}), 400
 
         except Exception as e:
             # Catch any other errors and return a 500 error with the error message
+            app.logger.error(f'Error processing QR code: {str(e)}')
             return jsonify({'success': False, 'message': f'Error processing QR code: {str(e)}'}), 500
 
     # For GET requests, render the scanner page
