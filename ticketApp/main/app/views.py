@@ -440,6 +440,18 @@ def add_stripe():
 
 @app.route('/cancel/<int:ticket_id>')
 def cancelPayment(ticket_id):
+    # check the ticket hasn't been paid for
+    ticket = Ticket.query.get(ticket_id)
+    if not ticket:
+        app.logger.error(f'User tried to cancel payment for ticket id {ticket_id}, which does not exist.')
+        flash('Ticket not found.', 'danger')
+        return redirect(url_for('home'))
+    if ticket.paid:
+        app.logger.error(f'User tried to cancel payment for ticket id {ticket_id}, which has already been paid for.')
+        flash('Payment already processed.', 'danger')
+        return redirect(url_for('home'))
+    # now delete the ticket
+    db.session.delete(ticket)
     flash('Payment cancelled your ticket will be deleted!', 'danger')
     app.logger.info(f'User {current_user.username} cancelled payment at {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}.')
     return redirect(url_for('home'))
