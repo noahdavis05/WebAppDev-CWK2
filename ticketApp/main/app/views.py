@@ -437,3 +437,8 @@ def add_stripe():
 
     return render_template('add_stripe.html', form=form)
 
+
+@app.route('/cancel')
+def cancelPayment():
+    flash('Payment cancelled your ticket will be deleted!', 'danger')
+    return redirect(url_for('home'))
