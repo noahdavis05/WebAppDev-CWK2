@@ -256,7 +256,7 @@ def buy_ticket(event_id):
                 }],
                 mode='payment',
                 success_url=YOUR_DOMAIN + f'/success/{ticket.id}?session_id={{CHECKOUT_SESSION_ID}}',
-                cancel_url=YOUR_DOMAIN + '/cancel',
+                cancel_url=YOUR_DOMAIN + '/cancel/{ticket.id}',
                 expires_at=expires_at,
             )
 
@@ -438,7 +438,8 @@ def add_stripe():
     return render_template('add_stripe.html', form=form)
 
 
-@app.route('/cancel')
-def cancelPayment():
+@app.route('/cancel/<int:ticket_id>')
+def cancelPayment(ticket_id):
     flash('Payment cancelled your ticket will be deleted!', 'danger')
+    app.logger.info(f'User {current_user.username} cancelled payment at {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}.')
     return redirect(url_for('home'))
