@@ -95,3 +95,9 @@ sqlalchemy.exc.InvalidRequestError: Can't operate on closed transaction inside c
 2024-11-30 17:33:08,258 - app - ERROR - An error occurred while creating an event  :dict_items([])
 2024-11-30 17:33:20,648 - app - INFO - Ticket 92 for event Noah's Party  scanned successfully.
 2024-11-30 17:33:30,568 - app - INFO - Ticket 94 for event Another Party scanned successfully.
+2024-12-01 15:29:30,801 - app - INFO - User accessed the landing page.
+2024-12-01 15:29:37,297 - app - INFO - User noahdavis05 logged in.
+2024-12-01 15:29:39,350 - app - INFO - Deleted unpaid ticket from event id 1.
+2024-12-01 15:29:39,357 - app - INFO - Deleted unpaid ticket from event id 1.
+2024-12-01 15:31:47,829 - app - ERROR - An error occurred while creating an event  :dict_items([])
+2024-12-01 15:31:56,336 - app - ERROR - User tried to buy ticket for event id 5, which has already passed.

@@ -205,6 +205,11 @@ def buy_ticket(event_id):
         app.logger.error(f'User tried to buy ticket for event id {event_id}, which does not exist.')
         return redirect(url_for('home'))
 
+    # check when the event is
+    if event.date < datetime.now().date():
+        flash('This event has already passed.', 'danger')
+        app.logger.error(f'User tried to buy ticket for event id {event_id}, which has already passed.')
+        return redirect(url_for('home'))
     # Count and clean up unpaid tickets
     tickets = Ticket.query.filter_by(event_id=event_id).all()
     for ticket in tickets:

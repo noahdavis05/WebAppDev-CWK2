@@ -2,8 +2,9 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h2 class="mb-3">Buy Tickets for {{ event.name }}</h2>
+    <h2 class="mb-3">Buy Tickets for {{ event.event_name }}</h2>
     
+    <p><strong>Description:</strong>  {{event.event_description}}</p>
     <p><strong>Date:</strong> {{ event.date }}</p>
     <p><strong>Location:</strong> {{ event.location }}</p>
     <p><strong>Remaining Tickets:</strong> {{ event.guests - ticket_count }}</p>
