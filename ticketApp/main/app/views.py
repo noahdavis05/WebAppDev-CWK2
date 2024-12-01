@@ -256,7 +256,7 @@ def buy_ticket(event_id):
                 }],
                 mode='payment',
                 success_url=YOUR_DOMAIN + f'/success/{ticket.id}?session_id={{CHECKOUT_SESSION_ID}}',
-                cancel_url=YOUR_DOMAIN + '/cancel/{ticket.id}',
+                cancel_url=YOUR_DOMAIN + f'/cancel/{ticket.id}',
                 expires_at=expires_at,
             )
 
