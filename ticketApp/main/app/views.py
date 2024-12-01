@@ -15,21 +15,19 @@ YOUR_DOMAIN = 'https://noahdavis.pythonanywhere.com/'
 @app.route('/home', methods=['GET', 'POST'])
 @login_required
 def home():
-    # Use current_user to get the logged-in user's username
     username = current_user.username
 
-    # get all events by any user that are in the future
+    # get all events by any user and filter them manually to work out events in future (including today & events started withing the last 4 hours)
     future_eventss = Event.query.filter().all()
-    
     future_events = []
     for event in future_eventss:
         event.price = "{:.2f}".format(event.price)
         if event.date >= datetime.today().date():
             future_events.append(event)
-        elif event.date == datetime.today().date() and (event.time + timedelta(hours=4)).time() >= datetime.now(): # so user could buy 
+        elif event.date == datetime.today().date() and (event.time + timedelta(hours=4)).time() >= datetime.now(): 
             future_events.append(event)
 
-    # get all the tickets for the user
+    # get all the tickets for the logged in user
     user_tickets = Ticket.query.options(
         joinedload(Ticket.event)
     ).filter_by(
@@ -128,7 +126,7 @@ def events():
 
         flash('Event created successfully!', 'success')
         app.logger.info(f"User {current_user.username} created an event at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}.")
-        return redirect(url_for('home'))
+        return redirect(url_for('events'))
     else:
         app.logger.error('An error occurred while creating an event  :' + str(form.errors.items()))  # Log the error
         for field, errors in form.errors.items():
