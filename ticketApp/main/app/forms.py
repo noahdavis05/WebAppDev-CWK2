@@ -3,7 +3,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, TextAreaField, DateField, TimeField, IntegerField, FloatField
 from wtforms.validators import DataRequired, Email, EqualTo, ValidationError, Length
 from .models import User
-from datetime import date
+from datetime import date, datetime
 
 
 
@@ -53,8 +53,13 @@ class EventForm(FlaskForm):
 
     # Custom validator for date
     def validate_date(form, field):
-        if field.data <= date.today():
+        if field.data < date.today():
             raise ValidationError("The event date must be in the future.")
+        elif field.data == date.today():
+            # Check if the time is in the future
+            now = datetime.now().time()
+            if form.time.data <= now:
+                raise ValidationError("The event date must be in the future.")
 
 class TicketForm(FlaskForm):
     submit = SubmitField('Buy Ticket')

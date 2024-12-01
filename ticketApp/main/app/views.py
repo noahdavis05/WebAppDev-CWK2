@@ -4,7 +4,7 @@ from flask_login import login_user, logout_user, login_required, current_user
 from .models import User, Event, db, Ticket, StripeKey
 from .forms import SignupForm, LoginForm, EventForm, TicketForm, StripeKeyForm
 from . import app
-from datetime import datetime
+from datetime import datetime, timedelta
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import joinedload
 import json
@@ -19,9 +19,15 @@ def home():
     username = current_user.username
 
     # get all events by any user that are in the future
-    future_events = Event.query.filter(Event.date >= datetime.now()).all()
-    for event in future_events:
+    future_eventss = Event.query.filter().all()
+    
+    future_events = []
+    for event in future_eventss:
         event.price = "{:.2f}".format(event.price)
+        if event.date >= datetime.today().date():
+            future_events.append(event)
+        elif event.date == datetime.today().date() and (event.time + timedelta(hours=4)).time() >= datetime.now(): # so user could buy 
+            future_events.append(event)
 
     # get all the tickets for the user
     user_tickets = Ticket.query.options(
@@ -36,6 +42,8 @@ def home():
 
         # Compare the dates (both are now datetime.date objects)
         if event_date >= datetime.today().date():
+            future_tickets.append(ticket)
+        elif event_date == datetime.today().date() and (event.time + timedelta(hours=4)).time() >= datetime.now():
             future_tickets.append(ticket)
 
     used_tickets = Ticket.query.filter_by(ticket_owner=current_user.id, ticket_used=1, deleted=0).all()
