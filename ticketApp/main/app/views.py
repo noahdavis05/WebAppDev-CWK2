@@ -452,6 +452,7 @@ def cancelPayment(ticket_id):
         return redirect(url_for('home'))
     # now delete the ticket
     db.session.delete(ticket)
+    db.session.commit()
     flash('Payment cancelled your ticket will be deleted!', 'danger')
     app.logger.info(f'User {current_user.username} cancelled payment at {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}.')
     return redirect(url_for('home'))
