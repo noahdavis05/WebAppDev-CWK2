@@ -16,12 +16,12 @@ async function query_server(ticket_id){
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken, // Include CSRF token in the request header
+                'X-CSRFToken': csrfToken, // Include CSRF token 
             },
-            body: JSON.stringify({ ticket_id: ticket_id }), // Send the QR code data as JSON
+            body: JSON.stringify({ ticket_id: ticket_id }), 
         });
 
-        const data = await response.json(); // Parse JSON response from the server
+        const data = await response.json(); 
         if (data.success) {
             // Find the ticket card by ID
             var ticketCard = document.getElementById('card-' + ticket_id);

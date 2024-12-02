@@ -1,6 +1,7 @@
 .navbar {
     background-color: rgba(0, 0, 0, 0.5);
 }
+
 .navbar a {
     color: #fff;
 }
@@ -23,15 +24,13 @@ body {
     border-color: #fff !important;
 }
 
-/* Navbar Toggler */
 .navbar-toggler {
-    border-color: white !important; /* White background for toggler button */
+    border-color: white !important;
     
 }
 
 .navbar-toggler-icon {
     background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath stroke='white' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E") !important;
-    /* Purple color for the toggler bars (#6a0dad) */
 }
 
 .alert-danger{

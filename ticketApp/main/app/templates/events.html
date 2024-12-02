@@ -7,19 +7,13 @@
     <head>
         <meta charset="UTF-8">
         <title>Flask with Views</title>
-        <!-- Link to external JS file -->
         <script src="{{ url_for('static', filename='js/tabs.js') }}" defer></script>
-        <!-- Optionally add styles -->
         <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/flash.css') }}">
         <script src="{{ url_for('static', filename='js/flash.js') }}" defer></script>
-    
-        
-
     </head>
     <body>
         <h2>Manage Your Events</h2>
-        <!-- Tabs navigation -->
         <div class="tabs">
             <button class="tablinks" onclick="openTab(event, 'createNewEvent')">New Event</button>
             <button class="tablinks" onclick="openTab(event, 'yourEvents')">Your Events</button>
@@ -38,7 +32,6 @@
             {% endif %}
         {% endwith %}
 
-        <!-- Tab content -->
         <div id="createNewEvent" class="tabcontent">
             <h2>Create a new event</h2>
             <form method="POST">
@@ -125,10 +118,7 @@
                     {% endif %}
                 {% endfor %}
             </div>
-        </div>   
-        
-
-        
+        </div>         
     </body>
     </html>
 {% endblock %}

@@ -23,17 +23,15 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 # Configure logging
-if not app.debug:  # Only log to files in production
-    # File handler
+if not app.debug:  
     file_handler = logging.FileHandler('app.log')
-    file_handler.setLevel(logging.INFO)  # Adjust as needed (DEBUG, WARNING, ERROR)
+    file_handler.setLevel(logging.INFO)  
     file_handler.setFormatter(logging.Formatter(
         '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
     ))
 
-    # Add the handler to Flask's app.logger
+    
     app.logger.addHandler(file_handler)
     app.logger.setLevel(logging.INFO)
 
-# Ensure views are imported last to avoid circular imports
 from . import views

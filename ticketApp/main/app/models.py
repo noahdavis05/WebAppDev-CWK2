@@ -8,7 +8,8 @@ from cryptography.fernet import Fernet
 db = SQLAlchemy()
 bcrypt = Bcrypt()
 
-#load the secret key from environment variables
+# load the secret key from environment variables
+# these are for encryptng the stripe keys
 secret_key = b'0CHWHXr60JrRm5sCmP40bWwHMHruNpa9AA0N1M2esYQ='
 cipher_suite = Fernet(secret_key)
 
@@ -24,7 +25,7 @@ def decrypt_key(encrypted_key: str) -> str:
     decrypted_key = cipher_suite.decrypt(encrypted_key.encode())  # Convert to bytes and decrypt
     return decrypted_key.decode()  # Return as string
 
-
+# model to store all the account details of the users for loggin in
 class User(db.Model, UserMixin):
     __tablename__ = 'users'
     
@@ -38,7 +39,8 @@ class User(db.Model, UserMixin):
 
     def check_password(self, password):
         return bcrypt.check_password_hash(self.password, password)
-    
+
+# model to make events for users to attend
 class Event(db.Model):
     __tablename__ = 'events'
 
@@ -55,7 +57,7 @@ class Event(db.Model):
     def __repr__(self):
         return f"<Event {self.event_name}>"
 
-
+# model to link together users and events, so many users can attend many events.
 class Ticket(db.Model):
     __tablename__ = 'tickets'
 
@@ -74,7 +76,7 @@ class Ticket(db.Model):
         return f"<Ticket {self.id}>"
     
 
-
+# model connected one to one to users (optionally) for accounts selling tickets to take payments.
 class StripeKey(db.Model):
     __tablename__ = 'stripe_keys'
 

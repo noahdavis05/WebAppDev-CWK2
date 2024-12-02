@@ -5,8 +5,7 @@ from wtforms.validators import DataRequired, Email, EqualTo, ValidationError, Le
 from .models import User
 from datetime import date, datetime
 
-
-
+# signup form with validation for username to be unique, and email to be unique, as well as passwords to match and email to be valid email.
 class SignupForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
@@ -24,12 +23,13 @@ class SignupForm(FlaskForm):
         if user:
             raise ValidationError('Email is already in use.')
 
+# login form with email and password fields
 class LoginForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Login')
 
-
+# for to make new event with validation for date to be in the future, naem to be less than 150 characters, description to be less than 500 characters, location to be less than 200 characters  
 class EventForm(FlaskForm):
     event_name = StringField('Event Name', validators=[
         DataRequired(),
@@ -64,6 +64,8 @@ class EventForm(FlaskForm):
 class TicketForm(FlaskForm):
     submit = SubmitField('Buy Ticket')
 
+# form to add stripe keys with validation for length of keys
+# note these keys are encrypted before being stored in the database
 class StripeKeyForm(FlaskForm):
     public_key = StringField('Public Key', validators=[DataRequired(), Length(min=10, max=255)])
     private_key = StringField('Private Key', validators=[DataRequired(), Length(min=10, max=255)])

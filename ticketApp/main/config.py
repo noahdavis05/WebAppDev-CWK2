@@ -3,10 +3,9 @@ import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config:
-    # Enable CSRF protection
+    # Enable csrf and define secret key
     WTF_CSRF_ENABLED = True
 
-    # Secret key for CSRF protection
     SECRET_KEY = os.urandom(32)
 
     # Database URI (app.db will be created in the main directory)

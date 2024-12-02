@@ -12,7 +12,6 @@ body {
     100% { background-position: 0% 50%; }
 }
 
-/* Navbar Styling */
 .navbar {
     background-color: rgba(0, 0, 0, 0.3);
 }
@@ -20,16 +19,14 @@ body {
     color: #fff;
 }
 
-/* Full-screen Sections */
 .section {
-    height: 100vh; /* Full viewport height */
+    height: 100vh; 
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
 }
 
-/* Card Styling */
 .card {
     background-color: rgba(255, 255, 255, 0.1);
     border: none;
@@ -54,12 +51,10 @@ body {
     gap: 20px;
 }
 
-/* More Info Section */
 .more-info {
     background-color: rgba(0, 0, 0, 0.2);
 }
 
-/* Smooth scrolling for anchor links */
 html {
     scroll-behavior: smooth;
 }

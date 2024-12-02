@@ -28,6 +28,7 @@ async function startVideo() {
 }
 
 let scanningPaused = false; // Flag to control scanning pause
+// if there is no flag the function will keep on making ajax requests to server
 
 async function scanQRCode() {
     if (scanningPaused) return; // Skip scanning if paused
@@ -54,7 +55,7 @@ async function scanQRCode() {
                 requestAnimationFrame(scanQRCode);
             }, 3000);
 
-            return; // Exit the function to prevent immediate re-scanning
+            return; 
         }
     }
 
@@ -111,5 +112,4 @@ function hidePopup() {
     popup.style.display = 'none';
 }
 
-// Start scanning when the page is ready
 startVideo();

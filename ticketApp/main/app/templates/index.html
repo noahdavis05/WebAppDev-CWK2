@@ -20,7 +20,6 @@
 <body>
     <h3>{{ message }}</h3>
 
-    <!-- Tabs navigation -->
     <div class="tabs">
         <button class="tablinks" onclick="openTab(event, 'otherEvents')">Browse Events</button>
         <button class="tablinks" onclick="openTab(event, 'ticket-list')">Your Tickets</button>
@@ -37,9 +36,6 @@
     {% endif %}
     {% endwith %}
     
-
-
-    <!-- Tab content -->
     <div id="otherEvents" class="tabcontent">
         <div class="d-flex align-items-center justify-content-left">
             <h4>Other Events</h4>
@@ -104,7 +100,7 @@
             <div class="col-md-4 d-flex align-items-stretch used-ticket">
                 <div class="card ticket-card-used" id="card-{{ ticket.id }}" style="width: 18rem;">
                     <div class="delete-btn" onclick="deleteTicket({{ ticket.id }})">
-                        &#128465; <!-- Recycling Bin Icon -->
+                        &#128465; 
                     </div>
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title">{{ ticket.event.event_name }}</h5>
@@ -123,10 +119,8 @@
     </div>
 
     <script>
-        // Pass ticket data from Flask to JavaScript
+        // Pass ticket data from Flask to JavaScript and initialize QR codes
         var tickets = {{ ticket_data | tojson }};
-        
-        // Ensure the QR codes are generated when the page is fully loaded
         document.addEventListener("DOMContentLoaded", function() {
             initializeQRCodes();
         });

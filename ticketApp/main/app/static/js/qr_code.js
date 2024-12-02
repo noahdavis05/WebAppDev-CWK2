@@ -20,7 +20,7 @@ function generateQRCode(ticket) {
         // Set the source of the image element to the QR code data URL
         imgElement.src = url;
 
-        // Append the image element to the corresponding div
+        // Append the image element to the  div
         document.getElementById("qr-" + ticket.ticket_id).appendChild(imgElement);
     }).catch(function(error) {
         console.error("Error generating QR code:", error);
@@ -67,6 +67,4 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 
-// Include the QRCode.js library if not already included
-// <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 

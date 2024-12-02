@@ -12,6 +12,10 @@ import stripe
 
 YOUR_DOMAIN = 'https://noahdavis.pythonanywhere.com/'
 
+# View to show the user a homepage.
+# Here they can see events, and filter events (search, and date).
+# Can view tickets for upcoming events and old used tickets.
+# Can delete used tickets, (uses ajax to give a smooth user experience).
 @app.route('/home', methods=['GET', 'POST'])
 @login_required
 def home():
@@ -33,32 +37,26 @@ def home():
     ).filter_by(
         ticket_owner=current_user.id, ticket_used=0, deleted=0, paid=1
     ).join(Event).order_by(Event.date).all()
+
     future_tickets = []
     for ticket in user_tickets:
         # Convert ticket.event.date to a datetime object if it's a string
         event_date = datetime.strptime(ticket.event.date, '%Y-%m-%d').date() if isinstance(ticket.event.date, str) else ticket.event.date
 
-        # Compare the dates (both are now datetime.date objects)
         if event_date >= datetime.today().date():
             future_tickets.append(ticket)
         elif event_date == datetime.today().date() and (event.time + timedelta(hours=4)).time() >= datetime.now():
             future_tickets.append(ticket)
 
     used_tickets = Ticket.query.filter_by(ticket_owner=current_user.id, ticket_used=1, deleted=0).all()
-    # in used tickets make all the datetimes in style dd-mm-yyyy hh-mm
-    # in your view where you're displaying tickets:
     for ticket in used_tickets:
         if ticket and ticket.scanned_at:
             # Only format for display, don't modify the database
             ticket.scanned_at_display = ticket.scanned_at.strftime("%d-%m-%Y %H:%M")
         else:
-            ticket.scanned_at_display = None  # Handle the case where scanned_at is None
+            ticket.scanned_at_display = None  
 
-
-    #and don't commit so these changes are only visible on the view, but not in db
-
-
-    # Prepare the QR code data for each ticket
+    # Prepare the QR code data for each ticket. Will be sent to the html, and js will render qr code.
     ticket_data = []
     for ticket in future_tickets:
         event = Event.query.get(ticket.event_id)
@@ -68,23 +66,24 @@ def home():
             'event_date': str(event.date),
             'event_time': str(event.time),
             'ticket_owner': str(ticket.ticket_owner),
-            'event_description': event.event_description,  # Add event description
-            'event_location': event.location,  # Add event location
+            'event_description': event.event_description,  
+            'event_location': event.location, 
         }
-        # Append the ticket data along with its QR code data into the list
         ticket_data.append(qr_data)
 
-    if request.method == 'POST':
+    # Handle ajax request to delete used tickets.
+    # Note this doesn't delete from db, just permently hides it from the user to declutter their homepage.
+    if request.method == 'POST': 
         try:
             data = request.get_json()
             if not data:
-                app.logger.error('Invalid JSON data received when trying to delete.')  # Log the error
+                app.logger.error('Invalid JSON data received when trying to delete.')  
                 return jsonify({'success': False, 'message': 'Invalid JSON data received.'}), 400
 
             ticket_id = data.get('ticket_id')
             if ticket.id:
-                print(ticket_id)
-                # now make the deleted value true
+                # print(ticket_id)
+                
                 ticket = Ticket.query.get(ticket_id)
                 ticket.deleted = True
                 db.session.commit()
@@ -94,7 +93,6 @@ def home():
                 app.logger.error('Invalid ID when trying to delete.')
                 return jsonify({'success': False, 'message': 'invalid id'}), 400
         except Exception as e:
-            # Catch any other errors and return a 500 error with the error message
             app.logger.error(f'Error processing id: {str(e)}')
             return jsonify({'success': False, 'message': f'Error processing id: {str(e)}'}), 500
 
@@ -102,11 +100,15 @@ def home():
                            future_events=future_events, ticket_data=ticket_data, used_tickets=used_tickets)
 
 
+# View to show a user about their events.
+# User can create a new event, can see all their events.
+# Contains links to pages to scan tickets, edit tickets, and add stripe keys for payments.
 @app.route('/events', methods=['GET', 'POST'])
 @login_required
 def events():
     # get all the user's events
     events = Event.query.filter_by(event_owner=current_user.id).all()
+    # code to handle new event creation
     form = EventForm()
     if form.validate_on_submit():
         # Create the new event
@@ -128,40 +130,41 @@ def events():
         app.logger.info(f"User {current_user.username} created an event at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}.")
         return redirect(url_for('events'))
     else:
-        app.logger.error('An error occurred while creating an event  :' + str(form.errors.items()))  # Log the error
+        # if an error occurred, log the error and flash the error messages to the user.
+        app.logger.error('An error occurred while creating an event  :' + str(form.errors.items()))  
         for field, errors in form.errors.items():
             for error in errors:
                 flash(f'{field.capitalize()}: {error}', 'danger')
 
     return render_template('events.html', events=events, form=form)
 
+
+# View to signup the user
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     form = SignupForm()
-
     if form.validate_on_submit():
         # Create the new user
         user = User(username=form.username.data, email=form.email.data)
-
         # Hash the password before storing it
         user.set_password(form.password.data)
-
         db.session.add(user)
         db.session.commit()
-
         flash('Account created successfully!', 'success')
         login_user(user)  # Log in the user
         app.logger.info(f'User {user.username} created an account.')
         return redirect(url_for('login'))
     else:
-        app.logger.error('An error occurred while creating an account  :' + str(form.errors.items()))  # Log the error
+        # log and flash all errors accordingly
+        app.logger.error('An error occurred while creating an account  :' + str(form.errors.items()))  
         for field, errors in form.errors.items():
             for error in errors:
                 flash(f'{field.capitalize()}: {error}', 'danger')
 
-    # Render the template with form and error messages if there are validation errors
     return render_template('signup.html', form=form)
 
+
+# View to log in
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
@@ -181,13 +184,13 @@ def login():
             app.logger.error(f'User {user.username} failed to log in.')
             flash('Login Unsuccessful. Please check email and password.', 'danger')
 
-
-
     return render_template('login.html', form=form)
 
 
+# View to logout user
 @app.route('/logout')
 def logout():
+    # check if user is logged in to see if logout function is needed.
     if not current_user.is_authenticated:
         return redirect(url_for('landing'))
     user = current_user.username
@@ -196,22 +199,30 @@ def logout():
     # flash('You have been logged out.', 'info')
     return redirect(url_for('landing'))
 
+
+# View for the landing page.
 @app.route('/')
 def landing():
     app.logger.info('User accessed the landing page.')
     return render_template('landing.html')
 
 
+# View for users tobuy tickets
+# Buys a ticket, and set paid = False
+# takes the user to a stripe checkout payment session which is valid for 30 mins.
+# if the user succesfully pays they are redirected to a success page where paid = True
+# if no payment made after 30 mins the ticket it deleted.
 @app.route('/event/<int:event_id>/buy', methods=['GET', 'POST'])
 @login_required
 def buy_ticket(event_id):
     event = Event.query.get(event_id)
+    # check event exists
     if not event:
         flash('Event not found.', 'danger')
         app.logger.error(f'User tried to buy ticket for event id {event_id}, which does not exist.')
         return redirect(url_for('home'))
 
-    # check when the event is
+    # if the event has already passed don't allow user to buy ticket
     if event.date < datetime.now().date():
         flash('This event has already passed.', 'danger')
         app.logger.error(f'User tried to buy ticket for event id {event_id}, which has already passed.')
@@ -224,14 +235,14 @@ def buy_ticket(event_id):
             db.session.commit()
             app.logger.info(f'Deleted unpaid ticket from event id {event_id}.')
 
-    # Recount tickets
+    # Recount tickets and don't let user buy a ticket if the event has been sold out.
     ticket_count = Ticket.query.filter_by(event_id=event_id).count()
     if ticket_count >= event.guests:
         flash('All tickets for this event have been sold.', 'danger')
         app.logger.error(f'User tried to buy ticket for event id {event_id}, which is sold out.')
         return redirect(url_for('home'))
 
-    # Get Stripe keys
+    # Get Stripe keys for the event owner, if they haven't set this up don't let the user buy tickets.
     keys = StripeKey.query.filter_by(user_id=event.event_owner).first()
     if not keys:
         flash('This ticket vendor has not set up a payment system yet!', 'danger')
@@ -240,21 +251,25 @@ def buy_ticket(event_id):
 
     stripe.api_key = keys.private_key
     form = TicketForm()
-
+    # 
     if form.validate_on_submit():
         try:
             username = current_user.username  # Fetch username early to avoid session issues
-            with db.session.begin_nested():  # Transaction begins here
-                tickets = Ticket.query.filter_by(event_id=event_id).with_for_update().all()
+            with db.session.begin_nested():  # nested transaction means transaction can be rolled back in case of problems
+                tickets = Ticket.query.filter_by(event_id=event_id).with_for_update().all() # locks database so no other tickets can be bought at same time.
                 ticket_count = len(tickets)
 
-                if ticket_count < event.guests:
+                if ticket_count < event.guests: # checks no tickets have been bought in the meantime to sell out event, and if not ticket is created.
                     ticket = Ticket(ticket_owner=current_user.id, event_id=event_id, created_at=datetime.now())
                     db.session.add(ticket)
                     db.session.commit()
                     app.logger.info(f"User {username} bought a ticket for event id {event_id} at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}.")
+                else:
+                    flash('Tickets sold out just before you bought yours!', 'danger')
+                    return(url_for('home'))
 
-            # Create Stripe session after database transaction
+            # Create Stripe session after database transaction.
+            # stripe session only lasts for 30 mins
             expires_at = int(datetime.utcnow().timestamp()) + 1800
             session = stripe.checkout.Session.create(
                 line_items=[{
@@ -270,7 +285,7 @@ def buy_ticket(event_id):
                 cancel_url=YOUR_DOMAIN + f'/cancel/{ticket.id}',
                 expires_at=expires_at,
             )
-
+            # direct user to stripe payment page
             return redirect(session.url, code=303)
 
         except OperationalError:
@@ -282,31 +297,34 @@ def buy_ticket(event_id):
     return render_template('buy_ticket.html', event=event, form=form, ticket_count=ticket_count)
 
 
-
-
+# View to let user scan tickets at their events.
+# This uses ajax and js to scan the tickets and confirm if the ticket is valid without page reload.
+# This should make the process of scanning tickets at the gate fast and easy.
+# All tickets are properly validated, to make sure they're: valid, unused, for the correct event.
 @app.route('/scan-ticket', methods=['GET', 'POST'])
 @login_required
 def scan_ticket():
     if request.method == 'POST':
-        print("Received POST request")
-        print(request.get_json())
+        #print("Received POST request")
+        #print(request.get_json())
         try:
-            # Get QR code data from the AJAX request (JSON)
+            # Get QR code data from the ajax request
             data = request.get_json()
             if not data:
-                app.logger.error('Invalid JSON data received when trying to scan.')  # Log the error
+                app.logger.error('Invalid JSON data received when trying to scan.')  
                 return jsonify({'success': False, 'message': 'Invalid JSON data received.'}), 400
 
-            qr_code = data.get('qr_code')  # Extract QR code data from the received JSON
+            qr_code = data.get('qr_code')  
             if qr_code:
-                print(f"Received QR Code: {qr_code}")  # Print the QR code to the console
+                #print(f"Received QR Code: {qr_code}")  # Print the QR code to the console
                 # now process the qr code
                 data = json.loads(qr_code)
-                # now get the ticket from the database
                 ticket = Ticket.query.get(data['ticket_id'])
+
+                # validate the ticket and log any errors
                 if not ticket:
+                    app.logger.error(f'Invalid ticket')
                     return jsonify({'success': False, 'message': 'Ticket not found.'}), 404
-                # now validate the other variables match that of the ticker
                 event = Event.query.get(ticket.event_id)
                 if not event:
                     app.logger.error(f'Invalid event scanned from ticket ')
@@ -329,7 +347,7 @@ def scan_ticket():
                     return jsonify({'success': False, 'message': 'Ticket has already been used.'}), 400
                 # get the event from the ticket
                 event = Event.query.get(ticket.event_id)
-                if current_user.id != event.event_owner:
+                if current_user.id != event.event_owner: # check that the account that scanned the ticket owns the event.
                     app.logger.error(f'User who did not own the event tried to scan a ticket.')
                     return jsonify({'success': False,'message': 'This ticket is not for your event'})
                 # now update the ticket to show it has been used
@@ -338,7 +356,6 @@ def scan_ticket():
                 ticket.scanned_at = datetime.now()
                 db.session.commit()
 
-                #print(data)
                 app.logger.info(f"User {current_user.username} scanned ticket id {ticket.id} at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}.")
                 return jsonify({'success': True, 'message': f'Ticket successfully scanned'})
             else:
@@ -346,14 +363,15 @@ def scan_ticket():
                 return jsonify({'success': False, 'message': 'No QR code data received.'}), 400
 
         except Exception as e:
-            # Catch any other errors and return a 500 error with the error message
             app.logger.error(f'Error processing QR code: {str(e)}')
             return jsonify({'success': False, 'message': f'Error processing QR code: {str(e)}'}), 500
 
-    # For GET requests, render the scanner page
     return render_template('scan_ticket.html')
 
 
+# View to edit the event details.
+# This changes the event details and validates that the new details are okay.
+# WARNING - editing the event details can change user's ticket qr - codes, the new ones will work, but screenshotted tickets won't
 @app.route('/edit-event/<int:event_id>', methods=['GET', 'POST'])
 @login_required
 def edit_event(event_id):
@@ -368,12 +386,11 @@ def edit_event(event_id):
         event.event_name = form.event_name.data
         event.event_description = form.event_description.data
         event.date = form.date.data
-        event.time = form.time.data  # No need for strptime conversion
+        event.time = form.time.data  
         event.location = form.location.data
         event.event_owner = current_user.id
         event.guests = form.guests.data
         event.price = form.price.data
-
 
         db.session.commit()
         flash('Succesfully updated event!', 'success')
@@ -384,6 +401,7 @@ def edit_event(event_id):
     return render_template('edit_event.html', form=form, event=event, event_time_str=event_time_str)
 
 
+# View to let user view details about an event.
 @app.route('/event/<int:event_id>')
 @login_required
 def view_event(event_id):
@@ -392,11 +410,14 @@ def view_event(event_id):
         app.logger.error(f'User tried to view event id {event_id}, which does not exist.')
         flash('Event not found.', 'danger')
         return redirect(url_for('home'))
-    # get all the tickets for the event
+    # get all the tickets for the event, so remaining tickets can be calculated and shown.
     tickets = Ticket.query.filter_by(event_id=event_id).all()
     return render_template('view_event.html', event=event, tickets=tickets)
 
 
+# Success View.
+# This is where the user is redirected to after successfully paying for their ticket.
+# The user's ticket is marked as paid in this view.
 @app.route('/success/<int:ticket_id>')
 @login_required
 def success(ticket_id):
@@ -404,6 +425,10 @@ def success(ticket_id):
     if not ticket:
         app.logger.warning(f'User {current_user.username} paid for ticket id {ticket_id}, which does not exist.')
         flash('Ticket not found.', 'danger')
+        return redirect(url_for('home'))
+    if ticket.paid:
+        app.logger.warning(f'Ticket already paid for.')
+        flash('Ticket already paid for', 'danger')
         return redirect(url_for('home'))
 
     ticket.paid = True
@@ -413,6 +438,7 @@ def success(ticket_id):
     return redirect(url_for('home'))
 
 
+# View where users can add stripe keys to their account to allow payments
 @app.route('/add-stripe', methods=['GET', 'POST'])
 @login_required
 def add_stripe():
@@ -444,11 +470,13 @@ def add_stripe():
 
         flash('Your Stripe keys have been saved/updated successfully!', 'success')
         app.logger.info(f'User {current_user.username} saved/updated their Stripe keys.')
-        return redirect(url_for('events'))  # Redirect to the page where they can view their saved keys
+        return redirect(url_for('events'))  
 
     return render_template('add_stripe.html', form=form)
 
 
+# View to go to when user cancels payment on the stripe checkout page.
+# When the user cancels their ticket is deleted.
 @app.route('/cancel/<int:ticket_id>')
 def cancelPayment(ticket_id):
     # check the ticket hasn't been paid for

@@ -110,3 +110,26 @@ sqlalchemy.exc.InvalidRequestError: Can't operate on closed transaction inside c
 2024-12-01 15:46:54,412 - app - ERROR - An error occurred while creating an event  :dict_items([])
 2024-12-01 15:47:25,105 - app - INFO - User noahdavis05 created an event at 2024-12-01 15:47:25.
 2024-12-01 15:47:35,161 - app - INFO - User noahdavis05 bought a ticket for event id 8 at 2024-12-01 15:47:35.
+2024-12-01 22:52:41,751 - app - INFO - User accessed the landing page.
+2024-12-01 22:52:53,766 - app - ERROR - User with email noah@thedavisfamily.org.uk not found, during log in.
+2024-12-01 22:53:01,258 - app - INFO - User accessed the landing page.
+2024-12-01 22:53:05,142 - app - ERROR - An error occurred while creating an account  :dict_items([])
+2024-12-01 22:53:20,551 - app - INFO - User noah created an account.
+2024-12-01 22:53:25,293 - app - INFO - User noah logged in.
+2024-12-01 22:53:30,566 - app - ERROR - An error occurred while creating an event  :dict_items([])
+2024-12-01 22:53:47,599 - app - INFO - User noah created an event at 2024-12-01 22:53:47.
+2024-12-01 22:53:47,609 - app - ERROR - An error occurred while creating an event  :dict_items([])
+2024-12-01 22:55:37,127 - app - ERROR - User tried to buy ticket for event id 1, but no payment system is set up.
+2024-12-01 22:56:45,096 - app - ERROR - An error occurred while creating an event  :dict_items([])
+2024-12-01 22:56:54,944 - app - INFO - User noah saved/updated their Stripe keys.
+2024-12-01 22:56:54,954 - app - ERROR - An error occurred while creating an event  :dict_items([])
+2024-12-01 22:56:59,910 - app - INFO - User noah bought a ticket for event id 1 at 2024-12-01 22:56:59.
+2024-12-02 12:48:58,872 - app - INFO - User accessed the landing page.
+2024-12-02 12:49:05,211 - app - INFO - User noah logged in.
+2024-12-02 12:49:12,134 - app - INFO - Deleted unpaid ticket from event id 1.
+2024-12-02 12:49:14,332 - app - INFO - User noah bought a ticket for event id 1 at 2024-12-02 12:49:14.
+2024-12-02 12:49:43,791 - app - INFO - User accessed the landing page.
+2024-12-02 12:49:53,943 - app - ERROR - An error occurred while creating an account  :dict_items([])
+2024-12-02 12:49:56,114 - app - INFO - User noah paid for ticket id 1 at 2024-12-02 12:49:56.
+2024-12-02 12:50:31,267 - app - INFO - User accessed the landing page.
+2024-12-02 12:54:05,033 - app - ERROR - User tried to cancel payment for ticket id 1, which has already been paid for.

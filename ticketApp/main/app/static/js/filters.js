@@ -33,8 +33,8 @@ function searchEvents() {
             title.includes(search) || subtitle.includes(search) || description.includes(search) || location.includes(search);
 
         const matchesDate = dateFilter
-            ? subtitle.includes(dateFilter) // Assuming date is part of the subtitle
-            : true; // No date filter means include all events
+            ? subtitle.includes(dateFilter) 
+            : true; 
 
         if (matchesDate && matchesSearch) {
             filteredEventsArray.push(event);
@@ -49,7 +49,7 @@ function searchEvents() {
     console.log(filteredEventsArray);
     
     events_section.innerHTML = '';
-
+    // replace all the valid cards in a new grid and let them be seen
     var count = 0;
     const newRow = document.createElement('div');
     newRow.className = 'row';
@@ -67,7 +67,7 @@ function searchEvents() {
         newRow.appendChild(event);
         count += 1;
     }
-
+    // now put all invalid cards in a new grid and let them be hidden
     for (let event of invalidEventsArray){
         if (count == 2){
             const newRow = document.createElement('div');
@@ -99,4 +99,4 @@ function toggleFilters() {
 }
 
 searchBar.addEventListener('keyup', searchEvents);
-datePicker.addEventListener('change', searchEvents); // U
+datePicker.addEventListener('change', searchEvents); 
